@@ -7,6 +7,9 @@ import {
   titleModel,
 } from './models.test';
 import { google } from '@ai-sdk/google';
+import { PostHog } from 'posthog-node';
+import { withTracing } from '@posthog/ai';
+
 export const myProvider = isTestEnvironment
   ? customProvider({
       languageModels: {
@@ -30,3 +33,13 @@ export const myProvider = isTestEnvironment
       //   'small-model': xai.image('grok-2-image'),
       // },
     });
+
+export function getLanguageModelWithTracing(model: string, userId: string) {
+  const phClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST as string,
+  });
+
+  return withTracing(myProvider.languageModel(model), phClient, {
+    posthogDistinctId: userId,
+  });
+}

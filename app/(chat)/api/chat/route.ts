@@ -16,10 +16,11 @@ import {
   saveChat,
   saveMessages,
 } from '@/lib/db/queries';
+import { randomUUID } from 'node:crypto';
 import { generateUUID, getTrailingMessageId } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
+import { getLanguageModelWithTracing } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
@@ -141,10 +142,15 @@ export async function POST(request: Request) {
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });
 
+    const model = getLanguageModelWithTracing(
+      selectedChatModel,
+      session.user.id,
+    );
+
     const stream = createDataStream({
       execute: (dataStream) => {
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
+          model: model,
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages,
           maxSteps: 5,
@@ -189,7 +195,7 @@ export async function POST(request: Request) {
                 await saveMessages({
                   messages: [
                     {
-                      id: assistantId,
+                      id: randomUUID(),
                       chatId: id,
                       role: assistantMessage.role,
                       parts: assistantMessage.parts,
