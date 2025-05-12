@@ -66,8 +66,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { id, message, selectedChatModel, selectedVisibilityType } =
-      requestBody;
+    const { id, message, selectedChatModel } = requestBody;
 
     const session = await auth();
 
@@ -102,7 +101,6 @@ export async function POST(request: Request) {
         id,
         userId: session.user.id,
         title,
-        visibility: selectedVisibilityType,
       });
     } else {
       if (chat.userId !== session.user.id) {
@@ -271,10 +269,6 @@ export async function GET(request: Request) {
 
   if (!chat) {
     return new Response('Not found', { status: 404 });
-  }
-
-  if (chat.visibility === 'private' && chat.userId !== session.user.id) {
-    return new Response('Forbidden', { status: 403 });
   }
 
   const streamIds = await getStreamIdsByChatId({ chatId });

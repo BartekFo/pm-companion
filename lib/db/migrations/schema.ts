@@ -1,8 +1,4 @@
-import { pgTable, foreignKey, uuid, varchar, json, timestamp, text, boolean, primaryKey } from "drizzle-orm/pg-core"
-  import { sql } from "drizzle-orm"
-
-
-
+import { pgTable, foreignKey, uuid, varchar, json, timestamp, text, boolean, primaryKey } from "drizzle-orm/pg-core";
 
 export const messageV2 = pgTable("Message_v2", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -27,7 +23,6 @@ export const chat = pgTable("Chat", {
 	createdAt: timestamp({ mode: 'string' }).notNull(),
 	title: text().notNull(),
 	userId: uuid().notNull(),
-	visibility: varchar().default('private').notNull(),
 },
 (table) => {
 	return {
