@@ -48,7 +48,8 @@ export interface RegisterActionState {
     | 'success'
     | 'failed'
     | 'user_exists'
-    | 'invalid_data';
+    | 'invalid_data'
+    | 'invalid_domain';
 }
 
 export const register = async (
@@ -60,6 +61,10 @@ export const register = async (
       email: formData.get('email'),
       password: formData.get('password'),
     });
+
+    if (!validatedData.email.endsWith('@masterborn.com')) {
+      return { status: 'invalid_domain' };
+    }
 
     const [user] = await getUser(validatedData.email);
 
