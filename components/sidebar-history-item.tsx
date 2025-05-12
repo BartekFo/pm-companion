@@ -24,7 +24,6 @@ import {
   TrashIcon,
 } from './icons';
 import { memo } from 'react';
-import { useChatVisibility } from '@/hooks/use-chat-visibility';
 
 const PureChatItem = ({
   chat,
@@ -37,11 +36,6 @@ const PureChatItem = ({
   onDelete: (chatId: string) => void;
   setOpenMobile: (open: boolean) => void;
 }) => {
-  const { visibilityType, setVisibilityType } = useChatVisibility({
-    chatId: chat.id,
-    initialVisibilityType: chat.visibility,
-  });
-
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
