@@ -2,7 +2,6 @@ import {
   appendClientMessage,
   appendResponseMessages,
   createDataStream,
-  smoothStream,
   streamText,
 } from 'ai';
 import { auth, type UserType } from '@/app/(auth)/auth';
@@ -19,10 +18,6 @@ import {
 } from '@/lib/db/queries';
 import { generateUUID, getTrailingMessageId } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-import { getWeather } from '@/lib/ai/tools/get-weather';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -155,26 +150,26 @@ export async function POST(request: Request) {
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages,
           maxSteps: 5,
-          experimental_activeTools:
-            selectedChatModel === 'chat-model-reasoning'
-              ? []
-              : [
-                  'getWeather',
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
-                ],
-          experimental_transform: smoothStream({ chunking: 'word' }),
-          experimental_generateMessageId: generateUUID,
-          tools: {
-            getWeather,
-            createDocument: createDocument({ session, dataStream }),
-            updateDocument: updateDocument({ session, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session,
-              dataStream,
-            }),
-          },
+          // experimental_activeTools:
+          //   selectedChatModel === 'chat-model-reasoning'
+          //     ? []
+          //     : [
+          //         'getWeather',
+          //         'createDocument',
+          //         'updateDocument',
+          //         'requestSuggestions',
+          //       ],
+          // experimental_transform: smoothStream({ chunking: 'word' }),
+          // experimental_generateMessageId: generateUUID,
+          // tools: {
+          //   getWeather,
+          //   createDocument: createDocument({ session, dataStream }),
+          //   updateDocument: updateDocument({ session, dataStream }),
+          //   requestSuggestions: requestSuggestions({
+          //     session,
+          //     dataStream,
+          //   }),
+          // },
           onFinish: async ({ response }) => {
             if (session.user?.id) {
               try {
@@ -237,7 +232,8 @@ export async function POST(request: Request) {
     } else {
       return new Response(stream);
     }
-  } catch (_) {
+  } catch (error) {
+    console.error(error);
     return new Response('An error occurred while processing your request!', {
       status: 500,
     });
