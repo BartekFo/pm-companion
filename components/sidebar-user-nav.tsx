@@ -1,7 +1,6 @@
 'use client';
 
-import { ChevronUp } from 'lucide-react';
-import Image from 'next/image';
+import { ChevronUp, UserIcon } from 'lucide-react';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
@@ -26,6 +25,7 @@ export function SidebarUserNav({ user }: { user: User }) {
   const router = useRouter();
   const { data, status } = useSession();
   const { setTheme, theme } = useTheme();
+  console.log('user', user);
 
   return (
     <SidebarMenu>
@@ -38,13 +38,10 @@ export function SidebarUserNav({ user }: { user: User }) {
                   <LoaderIcon />
                 </div>
               ) : (
-                <Image
-                  src={user.image ?? '/images/avatar.png'}
-                  width={24}
-                  height={24}
-                  alt={user.name ?? 'User avatar'}
-                  className="rounded-full"
-                />
+                <div className="flex items-center gap-2">
+                  <UserIcon />
+                  <span className="text-sm font-medium">{user.email}</span>
+                </div>
               )}
               <ChevronUp className="ml-auto size-4" />
             </SidebarMenuButton>
