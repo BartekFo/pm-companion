@@ -70,6 +70,7 @@ export default async function RootLayout({
             __html: THEME_COLOR_SCRIPT,
           }}
         />
+        <meta name="apple-mobile-web-app-title" content="POCompanion" />
       </head>
       <body className="antialiased">
         <ThemeProvider
