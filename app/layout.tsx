@@ -9,9 +9,8 @@ import { PostHogProvider } from './posthog-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
-  title: 'POCompanion Chat',
-  description:
-    'Take your documentation to the next level with POCompanion Chat',
+  title: 'POCompanion',
+  description: 'Take your documentation to the next level with POCompanion',
 };
 
 export const viewport = {
