@@ -134,9 +134,7 @@ export function Chat({
               stop={stop}
               attachments={attachments}
               setAttachments={setAttachments}
-              messages={messages}
               setMessages={setMessages}
-              append={append}
             />
           )}
         </form>
