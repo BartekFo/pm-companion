@@ -39,28 +39,29 @@
 }
 
 :root {
-  --primary-50: hsla(240, 100%, 98%, 1);
-  --primary-100: hsla(240, 50%, 96%, 1);
-  --primary-200: hsla(249, 100%, 94%, 1);
-  --primary-300: hsla(238, 70%, 82%, 1);
-  --primary-400: hsla(243, 67%, 74%, 1);
-  --primary-500: hsla(247, 62%, 67%, 1);
-  --primary-600: hsla(252, 56%, 57%, 1);
-  --primary-700: hsla(253, 43%, 51%, 1);
-  --primary-800: hsla(252, 40%, 41%, 1);
-  --primary-900: hsla(249, 33%, 38%, 1);
-  --neutral-0: hsla(0, 0%, 100%, 1);
-  --neutral-50: hsla(216, 29%, 97%, 1);
-  --neutral-100: hsla(223, 23%, 94%, 1);
-  --neutral-200: hsla(222, 23%, 89%, 1);
-  --neutral-300: hsla(220, 23%, 82%, 1);
-  --neutral-400: hsla(223, 22%, 74%, 1);
-  --neutral-500: hsla(227, 21%, 67%, 1);
-  --neutral-600: hsla(232, 18%, 59%, 1);
-  --neutral-700: hsla(240, 12%, 48%, 1);
-  --neutral-800: hsla(234, 14%, 41%, 1);
-  --neutral-900: hsla(231, 12%, 34%, 1);
-  --neutral-950: rgb(42, 42, 75);
+  --primary-50: #f5f5ff;
+  --primary-100: #f0f0fa;
+  --primary-200: #e4dfff;
+  --primary-300: #b0b2f1;
+  --primary-400: #9490e9;
+  --primary-500: #8175df;
+  --primary-600: #6e56cf;
+  --primary-700: #624bb7;
+  --primary-800: #503f94;
+  --primary-900: #4a4080;
+  --primary-950: #282145;
+  --neutral-0: #ffffff;
+  --neutral-50: #f4f6f9;
+  --neutral-100: #eceef3;
+  --neutral-200: #dce0e9;
+  --neutral-300: #c6cddb;
+  --neutral-400: #aeb6cb;
+  --neutral-500: #98a0bc;
+  --neutral-600: #8287a9;
+  --neutral-700: #6c6c8a;
+  --neutral-800: #5b5e78;
+  --neutral-900: #4d5062;
+  --neutral-950: #2a2a4a;
   --background: #F5F5FF;
   --foreground: #2A2A4A;
   --card: #FFFFFF;
@@ -125,6 +126,7 @@
   --primary-700: hsla(253, 65%, 65%, 1);
   --primary-800: hsla(252, 70%, 75%, 1);
   --primary-900: hsla(249, 75%, 85%, 1); 
+  --primary-950: hsl(247, 80%, 95%);
   --neutral-0: hsla(0, 0%, 10%, 1); 
   --neutral-50: hsla(216, 5%, 15%, 1);
   --neutral-100: hsla(223, 7%, 20%, 1);
@@ -182,6 +184,7 @@
   --color-primary-700: var(--primary-700);
   --color-primary-800: var(--primary-800);
   --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
   --color-neutral-0: var(--neutral-0);
   --color-neutral-50: var(--neutral-50);
   --color-neutral-100: var(--neutral-100);
