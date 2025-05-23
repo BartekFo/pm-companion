@@ -90,6 +90,24 @@ export function Text({
   );
 }
 
+export function SmallText({
+  children,
+  className,
+  ...props
+}: { children: React.ReactNode } & React.ComponentProps<'small'>) {
+  return (
+    <small
+      className={cn(
+        'text-sm font-medium leading-none text-primary-950',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </small>
+  );
+}
+
 export function LeadText({
   children,
   className,
