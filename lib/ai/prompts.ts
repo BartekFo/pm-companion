@@ -129,10 +129,4 @@ Improve the following code snippet based on the given prompt.
 
 ${currentContent}
 `
-      : type === 'sheet'
-        ? `\
-Improve the following spreadsheet based on the given prompt.
-
-${currentContent}
-`
-        : '';
+      : '';
