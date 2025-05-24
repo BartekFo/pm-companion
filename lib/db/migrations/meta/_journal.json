@@ -50,6 +50,20 @@
       "when": 1746118166211,
       "tag": "0006_marvelous_frog_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1748115069786,
+      "tag": "0007_luxuriant_starhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1748117324678,
+      "tag": "0008_sad_flatman",
+      "breakpoints": true
     }
   ]
 }
