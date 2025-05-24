@@ -11,7 +11,7 @@ interface ProjectLayoutProps {
 
 export default function ProjectLayout({ children }: ProjectLayoutProps) {
   return (
-    <div className="main-gradient p-6 h-dvh flex flex-col items-center justify-center gap-[2.5rem]">
+    <div className="main-gradient p-6 h-dvh flex flex-col items-center justify-center gap-10">
       {children}
     </div>
   );

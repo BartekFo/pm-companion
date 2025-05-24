@@ -49,6 +49,7 @@ export function Chat({
     data,
   } = useChat({
     id,
+    api: '/chat/api/chat',
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -87,7 +88,7 @@ export function Chat({
   }, [query, append, hasAppendedQuery, id]);
 
   const { data: votes } = useSWR<Array<Vote>>(
-    messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
+    messages.length >= 2 ? `/chat/api/vote?chatId=${id}` : null,
     fetcher,
   );
 

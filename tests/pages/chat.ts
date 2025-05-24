@@ -40,7 +40,7 @@ export class ChatPage {
 
   async isGenerationComplete() {
     const response = await this.page.waitForResponse((response) =>
-      response.url().includes('/api/chat'),
+      response.url().includes('/chat/api/chat'),
     );
 
     await response.finished();
@@ -48,7 +48,7 @@ export class ChatPage {
 
   async isVoteComplete() {
     const response = await this.page.waitForResponse((response) =>
-      response.url().includes('/api/vote'),
+      response.url().includes('/chat/api/vote'),
     );
 
     await response.finished();

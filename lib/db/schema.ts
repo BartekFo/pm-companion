@@ -70,11 +70,7 @@ export const voteDeprecated = pgTable(
       .references(() => messageDeprecated.id),
     isUpvoted: boolean('isUpvoted').notNull(),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  },
+  (table) => [primaryKey({ columns: [table.chatId, table.messageId] })],
 );
 
 export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>;
@@ -90,11 +86,7 @@ export const vote = pgTable(
       .references(() => message.id),
     isUpvoted: boolean('isUpvoted').notNull(),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.chatId, table.messageId] }),
-    };
-  },
+  (table) => [primaryKey({ columns: [table.chatId, table.messageId] })],
 );
 
 export type Vote = InferSelectModel<typeof vote>;
@@ -113,11 +105,7 @@ export const document = pgTable(
       .notNull()
       .references(() => user.id),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.id, table.createdAt] }),
-    };
-  },
+  (table) => [primaryKey({ columns: [table.id, table.createdAt] })],
 );
 
 export type Document = InferSelectModel<typeof document>;
@@ -137,13 +125,13 @@ export const suggestion = pgTable(
       .references(() => user.id),
     createdAt: timestamp('createdAt').notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.id] }),
-    documentRef: foreignKey({
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
       columns: [table.documentId, table.documentCreatedAt],
       foreignColumns: [document.id, document.createdAt],
     }),
-  }),
+  ],
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
@@ -155,13 +143,48 @@ export const stream = pgTable(
     chatId: uuid('chatId').notNull(),
     createdAt: timestamp('createdAt').notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.id] }),
-    chatRef: foreignKey({
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
       columns: [table.chatId],
       foreignColumns: [chat.id],
     }),
-  }),
+  ],
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const project = pgTable(
+  'Project',
+  {
+    id: uuid('id').notNull().defaultRandom(),
+    name: text('name').notNull(),
+    createdAt: timestamp('createdAt').notNull(),
+    userId: uuid('userId').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [user.id],
+    }),
+  ],
+);
+
+export const projectMember = pgTable(
+  'ProjectMember',
+  {
+    id: uuid('id').notNull().defaultRandom(),
+    projectId: uuid('projectId').notNull(),
+    email: varchar('email', { length: 64 }).notNull(),
+    role: varchar('role').notNull().default('member'),
+    createdAt: timestamp('createdAt').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
+      columns: [table.projectId],
+      foreignColumns: [project.id],
+    }),
+  ],
+);

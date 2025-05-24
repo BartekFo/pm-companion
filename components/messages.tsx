@@ -5,7 +5,7 @@ import { memo } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useMessages } from '@/hooks/use-messages';
 
 interface MessagesProps {
