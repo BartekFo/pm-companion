@@ -7,11 +7,11 @@ import { FileUpload } from './file-upload';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants/routes';
-import { useFormState } from 'react-dom';
 import { createProjectAction } from '../actions';
+import { useActionState } from 'react';
 
 export function CreateNewProjectForm() {
-  const [state, formAction] = useFormState(createProjectAction, {
+  const [state, formAction] = useActionState(createProjectAction, {
     status: 'idle',
   });
 
@@ -19,7 +19,7 @@ export function CreateNewProjectForm() {
     <form action={formAction} className="max-w-150 w-full space-y-4">
       <div>
         <Label>What is the project name?</Label>
-        <Input placeholder="Name" />
+        <Input name="name" placeholder="Name" />
       </div>
       <TeamMembersInput />
       <FileUpload />

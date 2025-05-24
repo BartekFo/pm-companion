@@ -11,6 +11,7 @@ import {
   inArray,
   lt,
   type SQL,
+  sql,
 } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
@@ -27,6 +28,10 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  project,
+  projectFile,
+  projectMember,
+  type ProjectFile,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateHashedPassword } from './utils';
@@ -52,7 +57,10 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db
+      .insert(user)
+      .values({ email, password: hashedPassword })
+      .returning();
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -471,6 +479,148 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     return streamIds.map(({ id }) => id);
   } catch (error) {
     console.error('Failed to get stream ids by chat id from database');
+    throw error;
+  }
+}
+
+export async function createProject(data: {
+  name: string;
+  userId: string;
+}) {
+  try {
+    const [newProject] = await db
+      .insert(project)
+      .values({
+        ...data,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return newProject;
+  } catch (error) {
+    console.error('Failed to create project in database');
+    throw error;
+  }
+}
+
+export async function createProjectFile(data: {
+  fileName: string;
+  contentType: string;
+  url: string;
+  content: string;
+  projectId: string;
+  userId: string;
+  embedding: number[];
+}) {
+  try {
+    const [file] = await db
+      .insert(projectFile)
+      .values({
+        ...data,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return file;
+  } catch (error) {
+    console.error('Failed to create project file in database');
+    throw error;
+  }
+}
+
+export async function getProjectFiles(
+  projectId: string,
+): Promise<ProjectFile[]> {
+  try {
+    return await db
+      .select()
+      .from(projectFile)
+      .where(eq(projectFile.projectId, projectId))
+      .orderBy(desc(projectFile.createdAt));
+  } catch (error) {
+    console.error('Failed to get project files from database');
+    throw error;
+  }
+}
+
+export async function createProjectMembers(data: {
+  projectId: string;
+  emails: string[];
+}) {
+  try {
+    const members = data.emails.map((email) => ({
+      projectId: data.projectId,
+      email,
+      role: 'member' as const,
+      status: 'pending' as const,
+      invitedAt: new Date(),
+      createdAt: new Date(),
+    }));
+
+    return await db.insert(projectMember).values(members).returning();
+  } catch (error) {
+    console.error('Failed to create project members in database');
+    throw error;
+  }
+}
+
+// Linkuj użytkownika do projektów gdy się rejestruje
+export async function linkUserToProjects(userId: string, email: string) {
+  try {
+    return await db
+      .update(projectMember)
+      .set({
+        userId,
+        status: 'accepted',
+        joinedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(projectMember.email, email),
+          eq(projectMember.status, 'pending'),
+        ),
+      )
+      .returning();
+  } catch (error) {
+    console.error('Failed to link user to projects');
+    throw error;
+  }
+}
+
+// Pobierz projekty użytkownika (jako owner lub member)
+export async function getUserProjects(userId: string) {
+  try {
+    // Projekty gdzie user jest owner
+    const ownedProjects = await db
+      .select({
+        id: project.id,
+        name: project.name,
+        createdAt: project.createdAt,
+        role: sql<string>`'owner'`,
+      })
+      .from(project)
+      .where(eq(project.userId, userId));
+
+    // Projekty gdzie user jest member
+    const memberProjects = await db
+      .select({
+        id: project.id,
+        name: project.name,
+        createdAt: project.createdAt,
+        role: projectMember.role,
+      })
+      .from(project)
+      .innerJoin(projectMember, eq(projectMember.projectId, project.id))
+      .where(
+        and(
+          eq(projectMember.userId, userId),
+          eq(projectMember.status, 'accepted'),
+        ),
+      );
+
+    return [...ownedProjects, ...memberProjects];
+  } catch (error) {
+    console.error('Failed to get user projects');
     throw error;
   }
 }

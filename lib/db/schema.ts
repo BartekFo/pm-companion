@@ -9,6 +9,7 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  vector,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -171,20 +172,36 @@ export const project = pgTable(
   ],
 );
 
-export const projectMember = pgTable(
-  'ProjectMember',
-  {
-    id: uuid('id').notNull().defaultRandom(),
-    projectId: uuid('projectId').notNull(),
-    email: varchar('email', { length: 64 }).notNull(),
-    role: varchar('role').notNull().default('member'),
-    createdAt: timestamp('createdAt').notNull(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.id] }),
-    foreignKey({
-      columns: [table.projectId],
-      foreignColumns: [project.id],
-    }),
-  ],
-);
+export const projectMember = pgTable('ProjectMember', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  projectId: uuid('projectId')
+    .notNull()
+    .references(() => project.id),
+  email: varchar('email', { length: 64 }).notNull(),
+  userId: uuid('userId').references(() => user.id), // Null jeśli user nie ma jeszcze konta
+  role: varchar('role').notNull().default('member'),
+  status: varchar('status', { enum: ['pending', 'accepted', 'declined'] })
+    .notNull()
+    .default('pending'),
+  invitedAt: timestamp('invitedAt').notNull(),
+  joinedAt: timestamp('joinedAt'), // Kiedy user zaakceptował
+  createdAt: timestamp('createdAt').notNull(),
+});
+
+export const projectFile = pgTable('ProjectFile', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  fileName: text('fileName').notNull(),
+  contentType: varchar('contentType', { length: 100 }).notNull(),
+  url: text('url').notNull(),
+  content: text('content').notNull(),
+  projectId: uuid('projectId')
+    .notNull()
+    .references(() => project.id),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  embedding: vector('embedding', { dimensions: 768 }),
+  createdAt: timestamp('createdAt').notNull(),
+});
+
+export type ProjectFile = InferSelectModel<typeof projectFile>;

@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-import { createUser, getUser } from '@/lib/db/queries';
+import { createUser, getUser, linkUserToProjects } from '@/lib/db/queries';
 
 import { signIn } from './auth';
 
@@ -71,7 +71,17 @@ export const register = async (
     if (user) {
       return { status: 'user_exists' } as RegisterActionState;
     }
-    await createUser(validatedData.email, validatedData.password);
+
+    const [newUser] = await createUser(
+      validatedData.email,
+      validatedData.password,
+    );
+
+    // Link user to any pending project invitations
+    if (newUser) {
+      await linkUserToProjects(newUser.id, validatedData.email);
+    }
+
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
