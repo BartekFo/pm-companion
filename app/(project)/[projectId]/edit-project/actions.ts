@@ -1,0 +1,146 @@
+'use server';
+
+import { z } from 'zod';
+import {
+  updateProject,
+  createProjectMembers,
+  deleteProjectFile,
+  deleteProjectMember,
+  getProjectMembers,
+} from '@/lib/db/queries';
+import { auth } from '@/app/(auth)/auth';
+import { revalidatePath } from 'next/cache';
+import { ROUTES } from '@/lib/constants/routes';
+import { del } from '@vercel/blob';
+import { redirect } from 'next/navigation';
+import { uploadFilesWithEmbeddings } from '@/lib/files-upload';
+
+const updateProjectSchema = z.object({
+  name: z.string().min(1, 'Project name is required'),
+  teamMembers: z.string().optional(),
+  projectId: z.string(),
+});
+
+export interface UpdateProjectState {
+  status: 'idle' | 'in_progress' | 'success' | 'failed' | 'invalid_data';
+  errors?: string[];
+}
+
+const FileSchema = z.object({
+  file: z
+    .instanceof(Blob)
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: 'File size should be less than 5MB',
+    })
+    .refine((file) => ['application/pdf'].includes(file.type), {
+      message: 'File type should be PDF',
+    }),
+});
+
+const MAX_FILES = 10;
+
+export async function updateProjectAction(
+  _prevState: UpdateProjectState,
+  formData: FormData,
+): Promise<UpdateProjectState> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { status: 'failed', errors: ['Authentication required'] };
+  }
+
+  const rawData = {
+    name: formData.get('name') as string,
+    teamMembers: formData.get('teamMembers') as string,
+    projectId: formData.get('projectId') as string,
+  };
+
+  const files = formData.getAll('files') as File[];
+  const validFiles = files
+    .filter((file) => FileSchema.safeParse({ file }).success)
+    .slice(0, MAX_FILES);
+
+  const result = updateProjectSchema.safeParse(rawData);
+  if (!result.success) {
+    return {
+      status: 'invalid_data',
+      errors: result.error.issues.map((issue) => issue.message),
+    };
+  }
+
+  const { name, teamMembers, projectId } = result.data;
+
+  try {
+    await updateProject(projectId, { name });
+
+    const currentMembers = await getProjectMembers(projectId);
+    const currentEmails = currentMembers.map((member) => member.email);
+
+    const newMemberEmails = teamMembers
+      ? teamMembers
+          .split(',')
+          .map((email) => email.trim())
+          .filter(Boolean)
+      : [];
+
+    const emailsToAdd = newMemberEmails.filter(
+      (email) => !currentEmails.includes(email),
+    );
+    if (emailsToAdd.length > 0) {
+      await createProjectMembers({
+        projectId,
+        emails: emailsToAdd,
+      });
+    }
+
+    if (validFiles.length > 0) {
+      await uploadFilesWithEmbeddings(validFiles, projectId, session.user.id);
+    }
+  } catch (error) {
+    console.error('Failed to update project:', error);
+    return {
+      status: 'failed',
+      errors: ['Failed to update project. Please try again.'],
+    };
+  }
+
+  revalidatePath(`/project/${projectId}/edit-project`);
+  revalidatePath(ROUTES.PROJECT.ROOT);
+  redirect(ROUTES.PROJECT.ROOT);
+}
+
+export async function deleteFileAction(fileId: string, fileUrl: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Authentication required');
+  }
+
+  try {
+    // Delete file from blob storage
+    await del(fileUrl);
+
+    // Delete file and embeddings from database
+    await deleteProjectFile(fileId);
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete file:', error);
+    throw new Error('Failed to delete file');
+  }
+}
+
+export async function removeMemberAction(memberId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Authentication required');
+  }
+
+  try {
+    await deleteProjectMember(memberId);
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to remove member:', error);
+    throw new Error('Failed to remove member');
+  }
+}
