@@ -587,10 +587,8 @@ export async function linkUserToProjects(userId: string, email: string) {
   }
 }
 
-// Pobierz projekty użytkownika (jako owner lub member)
 export async function getUserProjects(userId: string) {
   try {
-    // Projekty gdzie user jest owner
     const ownedProjects = await db
       .select({
         id: project.id,
@@ -601,7 +599,6 @@ export async function getUserProjects(userId: string) {
       .from(project)
       .where(eq(project.userId, userId));
 
-    // Projekty gdzie user jest member
     const memberProjects = await db
       .select({
         id: project.id,
