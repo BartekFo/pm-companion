@@ -655,3 +655,78 @@ export async function getProjectFileEmbeddings(fileId: string) {
     throw error;
   }
 }
+
+export async function getProjectById(projectId: string) {
+  try {
+    const [projectData] = await db
+      .select()
+      .from(project)
+      .where(eq(project.id, projectId))
+      .limit(1);
+
+    return projectData;
+  } catch (error) {
+    console.error('Failed to get project by id from database');
+    throw error;
+  }
+}
+
+export async function getProjectMembers(projectId: string) {
+  try {
+    return await db
+      .select()
+      .from(projectMember)
+      .where(eq(projectMember.projectId, projectId))
+      .orderBy(asc(projectMember.createdAt));
+  } catch (error) {
+    console.error('Failed to get project members from database');
+    throw error;
+  }
+}
+
+export async function updateProject(projectId: string, data: { name: string }) {
+  try {
+    const [updatedProject] = await db
+      .update(project)
+      .set(data)
+      .where(eq(project.id, projectId))
+      .returning();
+
+    return updatedProject;
+  } catch (error) {
+    console.error('Failed to update project in database');
+    throw error;
+  }
+}
+
+export async function deleteProjectFile(fileId: string) {
+  try {
+    await db
+      .delete(projectFileEmbedding)
+      .where(eq(projectFileEmbedding.fileId, fileId));
+
+    const [deletedFile] = await db
+      .delete(projectFile)
+      .where(eq(projectFile.id, fileId))
+      .returning();
+
+    return deletedFile;
+  } catch (error) {
+    console.error('Failed to delete project file from database');
+    throw error;
+  }
+}
+
+export async function deleteProjectMember(memberId: string) {
+  try {
+    const [deletedMember] = await db
+      .delete(projectMember)
+      .where(eq(projectMember.id, memberId))
+      .returning();
+
+    return deletedMember;
+  } catch (error) {
+    console.error('Failed to delete project member from database');
+    throw error;
+  }
+}

@@ -1,13 +1,17 @@
+import type { ProjectFile } from '@/lib/db/schema';
+
 export interface IFileUploadProps {
   name?: string;
   accept?: string;
   multiple?: boolean;
   maxFiles?: number;
+  maxFileSize?: number;
   className?: string;
+  defaultFiles?: ProjectFile[];
 }
 
 export interface IFileItemProps {
-  file: File;
+  fileName: string;
   onRemove: (name: string) => void;
 }
 

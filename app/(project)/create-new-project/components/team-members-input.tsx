@@ -5,16 +5,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { z } from 'zod/v4-mini';
 
 const emailSchema = z.email({ error: 'Please enter a valid email address' });
 
-export function TeamMembersInput() {
+interface TeamMembersInputProps {
+  defaultValue?: string;
+}
+
+export function TeamMembersInput({ defaultValue = '' }: TeamMembersInputProps) {
   const [email, setEmail] = useState('');
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
   const [error, setError] = useState('');
+
+  // Initialize with default value
+  useEffect(() => {
+    if (defaultValue) {
+      const emails = defaultValue
+        .split(',')
+        .map((email) => email.trim())
+        .filter(Boolean);
+      setTeamMembers(emails);
+    }
+  }, [defaultValue]);
 
   const handleAdd = () => {
     const trimmedEmail = email.trim();

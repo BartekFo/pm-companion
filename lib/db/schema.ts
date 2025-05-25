@@ -172,6 +172,8 @@ export const project = pgTable(
   ],
 );
 
+export type Project = InferSelectModel<typeof project>;
+
 export const projectMember = pgTable('ProjectMember', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   projectId: uuid('projectId')
@@ -187,6 +189,8 @@ export const projectMember = pgTable('ProjectMember', {
   joinedAt: timestamp('joinedAt'), // Kiedy user zaakceptował
   createdAt: timestamp('createdAt').notNull(),
 });
+
+export type ProjectMember = InferSelectModel<typeof projectMember>;
 
 export const projectFile = pgTable('ProjectFile', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
