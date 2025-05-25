@@ -200,8 +200,29 @@ export const projectFile = pgTable('ProjectFile', {
   userId: uuid('userId')
     .notNull()
     .references(() => user.id),
-  embedding: vector('embedding', { dimensions: 768 }),
   createdAt: timestamp('createdAt').notNull(),
 });
 
 export type ProjectFile = InferSelectModel<typeof projectFile>;
+
+export const projectFileEmbedding = pgTable(
+  'ProjectFileEmbedding',
+  {
+    id: uuid('id').notNull().defaultRandom(),
+    fileId: uuid('fileId').notNull(),
+    embedding: vector('embedding', { dimensions: 768 }).notNull(),
+    chunkIndex: varchar('chunkIndex', { length: 50 }),
+    createdAt: timestamp('createdAt').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.id] }),
+    foreignKey({
+      columns: [table.fileId],
+      foreignColumns: [projectFile.id],
+    }),
+  ],
+);
+
+export type ProjectFileEmbedding = InferSelectModel<
+  typeof projectFileEmbedding
+>;

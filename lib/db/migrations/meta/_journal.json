@@ -71,6 +71,13 @@
       "when": 1748120813428,
       "tag": "0009_chunky_black_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1748187898820,
+      "tag": "0010_clever_madame_masque",
+      "breakpoints": true
     }
   ]
 }

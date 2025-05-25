@@ -32,6 +32,7 @@ import {
   projectFile,
   projectMember,
   type ProjectFile,
+  projectFileEmbedding,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateHashedPassword } from './utils';
@@ -510,7 +511,6 @@ export async function createProjectFile(data: {
   content: string;
   projectId: string;
   userId: string;
-  embedding: number[];
 }) {
   try {
     const [file] = await db
@@ -524,6 +524,27 @@ export async function createProjectFile(data: {
     return file;
   } catch (error) {
     console.error('Failed to create project file in database');
+    throw error;
+  }
+}
+
+export async function createProjectFileEmbedding(data: {
+  fileId: string;
+  embedding: number[];
+  chunkIndex?: string;
+}) {
+  try {
+    const [embedding] = await db
+      .insert(projectFileEmbedding)
+      .values({
+        ...data,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return embedding;
+  } catch (error) {
+    console.error('Failed to create project file embedding in database');
     throw error;
   }
 }
@@ -618,6 +639,19 @@ export async function getUserProjects(userId: string) {
     return [...ownedProjects, ...memberProjects];
   } catch (error) {
     console.error('Failed to get user projects');
+    throw error;
+  }
+}
+
+export async function getProjectFileEmbeddings(fileId: string) {
+  try {
+    return await db
+      .select()
+      .from(projectFileEmbedding)
+      .where(eq(projectFileEmbedding.fileId, fileId))
+      .orderBy(asc(projectFileEmbedding.chunkIndex));
+  } catch (error) {
+    console.error('Failed to get project file embeddings from database');
     throw error;
   }
 }
