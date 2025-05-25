@@ -5,6 +5,7 @@ import {
   createProject,
   createProjectFile,
   createProjectMembers,
+  createProjectFileEmbedding,
 } from '@/lib/db/queries';
 import { auth } from '@/app/(auth)/auth';
 import { revalidatePath } from 'next/cache';
@@ -108,25 +109,29 @@ export async function createProjectAction(
           const loader = new PDFLoader(file);
           const loadedDocuments = await loader.load();
           const chunks = await splitter.splitDocuments(loadedDocuments);
-          console.log(chunks);
+
+          const createdFile = await createProjectFile({
+            fileName: data.pathname,
+            contentType: data.contentType,
+            url: data.url,
+            content: loadedDocuments[0].pageContent,
+            projectId: project.id,
+            userId: session.user.id,
+          });
 
           const { embeddings } = await embedMany({
             model: embeddingModel,
             values: chunks.map((chunk) => chunk.pageContent),
           });
 
-          console.log(embeddings);
-
-          const chunkPromises = chunks.map(async (chunk, index) => {
-            return await createProjectFile({
-              fileName: data.pathname,
-              contentType: data.contentType,
-              url: data.url,
-              content: chunk.pageContent,
-              projectId: project.id,
-              userId: session.user.id,
+          const chunkPromises = chunks.map(async (_, index) => {
+            await createProjectFileEmbedding({
+              fileId: createdFile.id,
               embedding: embeddings[index],
+              chunkIndex: index.toString(),
             });
+
+            return file;
           });
 
           return await Promise.all(chunkPromises);
