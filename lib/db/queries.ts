@@ -585,7 +585,6 @@ export async function createProjectMembers(data: {
   }
 }
 
-// Linkuj użytkownika do projektów gdy się rejestruje
 export async function linkUserToProjects(userId: string, email: string) {
   try {
     return await db

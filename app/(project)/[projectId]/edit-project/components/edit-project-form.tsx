@@ -30,7 +30,7 @@ export function EditProjectForm({
 
   return (
     <div className="max-w-150 w-full space-y-6">
-      <form className="space-y-4">
+      <form className="space-y-4" action={formAction}>
         <input type="hidden" name="projectId" value={project.id} />
 
         <div>

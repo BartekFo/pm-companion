@@ -55,6 +55,8 @@ export async function updateProjectAction(
   };
 
   const files = formData.getAll('files') as File[];
+  const filesToDelete = formData.getAll('filesToDelete') as string[];
+
   const validFiles = files
     .filter((file) => FileSchema.safeParse({ file }).success)
     .slice(0, MAX_FILES);
@@ -73,8 +75,6 @@ export async function updateProjectAction(
     await updateProject(projectId, { name });
 
     const currentMembers = await getProjectMembers(projectId);
-    const currentEmails = currentMembers.map((member) => member.email);
-
     const newMemberEmails = teamMembers
       ? teamMembers
           .split(',')
@@ -82,14 +82,37 @@ export async function updateProjectAction(
           .filter(Boolean)
       : [];
 
+    const membersToDelete = currentMembers.filter(
+      (member) => !newMemberEmails.includes(member.email),
+    );
+
+    const currentEmails = currentMembers.map((member) => member.email);
     const emailsToAdd = newMemberEmails.filter(
       (email) => !currentEmails.includes(email),
     );
+
+    for (const member of membersToDelete) {
+      await deleteProjectMember(member.id);
+    }
+
     if (emailsToAdd.length > 0) {
       await createProjectMembers({
         projectId,
         emails: emailsToAdd,
       });
+    }
+
+    if (filesToDelete.length > 0) {
+      for (const fileId of filesToDelete) {
+        try {
+          const deletedFile = await deleteProjectFile(fileId);
+          if (deletedFile) {
+            await del(deletedFile.url);
+          }
+        } catch (error) {
+          console.error(`Failed to delete file ${fileId}:`, error);
+        }
+      }
     }
 
     if (validFiles.length > 0) {
@@ -106,41 +129,4 @@ export async function updateProjectAction(
   revalidatePath(`/project/${projectId}/edit-project`);
   revalidatePath(ROUTES.PROJECT.ROOT);
   redirect(ROUTES.PROJECT.ROOT);
-}
-
-export async function deleteFileAction(fileId: string, fileUrl: string) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    throw new Error('Authentication required');
-  }
-
-  try {
-    // Delete file from blob storage
-    await del(fileUrl);
-
-    // Delete file and embeddings from database
-    await deleteProjectFile(fileId);
-
-    revalidatePath('/');
-    return { success: true };
-  } catch (error) {
-    console.error('Failed to delete file:', error);
-    throw new Error('Failed to delete file');
-  }
-}
-
-export async function removeMemberAction(memberId: string) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    throw new Error('Authentication required');
-  }
-
-  try {
-    await deleteProjectMember(memberId);
-    revalidatePath('/');
-    return { success: true };
-  } catch (error) {
-    console.error('Failed to remove member:', error);
-    throw new Error('Failed to remove member');
-  }
 }
