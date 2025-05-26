@@ -78,6 +78,13 @@
       "when": 1748187898820,
       "tag": "0010_clever_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1748291327362,
+      "tag": "0011_naive_namorita",
+      "breakpoints": true
     }
   ]
 }

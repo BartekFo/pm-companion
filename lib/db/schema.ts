@@ -214,6 +214,7 @@ export const projectFileEmbedding = pgTable(
   {
     id: uuid('id').notNull().defaultRandom(),
     fileId: uuid('fileId').notNull(),
+    chunkContent: text('chunkContent').notNull(),
     embedding: vector('embedding', { dimensions: 768 }).notNull(),
     chunkIndex: varchar('chunkIndex', { length: 50 }),
     createdAt: timestamp('createdAt').notNull(),

@@ -46,10 +46,11 @@ export async function uploadFilesWithEmbeddings(
         values: chunks.map((chunk) => chunk.pageContent),
       });
 
-      const chunkPromises = chunks.map(async (_, index) => {
+      const chunkPromises = chunks.map(async (chunk, index) => {
         await createProjectFileEmbedding({
           fileId: createdFile.id,
           embedding: embeddings[index],
+          chunkContent: chunk.pageContent,
           chunkIndex: index.toString(),
         });
 

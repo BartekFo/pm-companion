@@ -2,13 +2,14 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TeamMembersInput } from './team-members-input';
-import { FileUpload } from './file-upload';
+import { TeamMembersInput } from '../../components/team-members-input';
+import { FileUpload } from '../../components/file-upload';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants/routes';
 import { createProjectAction } from '../actions';
 import { useActionState } from 'react';
+import { SubmitButton } from '@/components/submit-button';
 
 export function CreateNewProjectForm() {
   const [state, formAction] = useActionState(createProjectAction, {
@@ -34,9 +35,9 @@ export function CreateNewProjectForm() {
         <Button variant="outline" asChild>
           <Link href={ROUTES.PROJECT.ROOT}>Cancel</Link>
         </Button>
-        <Button type="submit" disabled={state.status === 'in_progress'}>
-          {state.status === 'in_progress' ? 'Creating...' : 'Create project'}
-        </Button>
+        <SubmitButton isSuccessful={state.status === 'success'}>
+          Create project
+        </SubmitButton>
       </div>
     </form>
   );

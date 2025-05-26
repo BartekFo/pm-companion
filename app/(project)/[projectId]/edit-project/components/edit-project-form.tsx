@@ -2,14 +2,15 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TeamMembersInput } from '../../../create-new-project/components/team-members-input';
-import { FileUpload } from '../../../create-new-project/components/file-upload';
+import { TeamMembersInput } from '../../../components/team-members-input';
+import { FileUpload } from '../../../components/file-upload';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants/routes';
 import { updateProjectAction } from '../actions';
 import { useActionState } from 'react';
 import type { Project, ProjectMember, ProjectFile } from '@/lib/db/schema';
+import { SubmitButton } from '@/components/submit-button';
 
 interface EditProjectFormProps {
   project: Project;
@@ -58,9 +59,9 @@ export function EditProjectForm({
           <Button variant="outline" asChild>
             <Link href={ROUTES.PROJECT.ROOT}>Cancel</Link>
           </Button>
-          <Button type="submit" disabled={state.status === 'in_progress'}>
-            {state.status === 'in_progress' ? 'Updating...' : 'Update project'}
-          </Button>
+          <SubmitButton isSuccessful={state.status === 'success'}>
+            Update project
+          </SubmitButton>
         </div>
       </form>
     </div>

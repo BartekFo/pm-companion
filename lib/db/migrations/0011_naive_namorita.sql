@@ -1,0 +1,1 @@
+ALTER TABLE "ProjectFileEmbedding" ADD COLUMN "chunkContent" text NOT NULL;

@@ -531,6 +531,7 @@ export async function createProjectFile(data: {
 export async function createProjectFileEmbedding(data: {
   fileId: string;
   embedding: number[];
+  chunkContent: string;
   chunkIndex?: string;
 }) {
   try {
