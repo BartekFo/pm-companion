@@ -60,6 +60,7 @@ function PureArtifact({
   reload,
   votes,
   isReadonly,
+  projectId,
 }: {
   chatId: string;
   input: string;
@@ -75,8 +76,14 @@ function PureArtifact({
   handleSubmit: UseChatHelpers['handleSubmit'];
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
+  projectId?: string;
 }) {
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
+
+  // Determine document API endpoint based on project context
+  const documentEndpoint = projectId
+    ? `/${projectId}/chat/api/document`
+    : '/chat/api/document';
 
   const {
     data: documents,
@@ -84,7 +91,7 @@ function PureArtifact({
     mutate: mutateDocuments,
   } = useSWR<Array<Document>>(
     artifact.documentId !== 'init' && artifact.status !== 'streaming'
-      ? `/chat/api/document?id=${artifact.documentId}`
+      ? `${documentEndpoint}?id=${artifact.documentId}`
       : null,
     fetcher,
   );
@@ -122,7 +129,7 @@ function PureArtifact({
       if (!artifact) return;
 
       mutate<Array<Document>>(
-        `/chat/api/document?id=${artifact.documentId}`,
+        `${documentEndpoint}?id=${artifact.documentId}`,
         async (currentDocuments) => {
           if (!currentDocuments) return undefined;
 
@@ -134,7 +141,7 @@ function PureArtifact({
           }
 
           if (currentDocument.content !== updatedContent) {
-            await fetch(`/chat/api/document?id=${artifact.documentId}`, {
+            await fetch(`${documentEndpoint}?id=${artifact.documentId}`, {
               method: 'POST',
               body: JSON.stringify({
                 title: artifact.title,
@@ -158,7 +165,7 @@ function PureArtifact({
         { revalidate: false },
       );
     },
-    [artifact, mutate],
+    [artifact, mutate, documentEndpoint],
   );
 
   const debouncedHandleContentChange = useDebounceCallback(
@@ -327,6 +334,7 @@ function PureArtifact({
                     setAttachments={setAttachments}
                     className="bg-background dark:bg-muted"
                     setMessages={setMessages}
+                    projectId={projectId}
                   />
                 </form>
               </div>

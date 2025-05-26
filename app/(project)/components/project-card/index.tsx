@@ -21,18 +21,13 @@ export function ProjectCard({ id, name }: ProjectCardProps) {
       >
         <PencilLine className="w-4 h-4 text-primary-400" />
       </Link>
-      <button
-        type="button"
-        onClick={() => {
-          console.log('clicked');
-        }}
-        className="absolute inset-0 w-full cursor-pointer h-full active:bg-primary-50"
+      <Link
+        href={ROUTES.PROJECT.CHAT(id)}
+        className="grid place-items-center absolute inset-0 w-full cursor-pointer h-full active:bg-primary-50"
       >
-        <div className="text-center px-2 pointer-events-none">
-          <Heading3>{name}</Heading3>
-        </div>
+        <Heading3>{name}</Heading3>
         <span className="sr-only">Select project</span>
-      </button>
+      </Link>
     </div>
   );
 }

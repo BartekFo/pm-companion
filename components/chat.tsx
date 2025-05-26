@@ -25,6 +25,7 @@ export function Chat({
   isReadonly,
   session,
   autoResume,
+  projectId,
 }: {
   id: string;
   initialMessages: Array<UIMessage>;
@@ -32,8 +33,17 @@ export function Chat({
   isReadonly: boolean;
   session: Session;
   autoResume: boolean;
+  projectId?: string;
 }) {
   const { mutate } = useSWRConfig();
+
+  const apiEndpoint = projectId
+    ? `/${projectId}/chat/api/chat`
+    : '/chat/api/chat';
+  const voteEndpoint = projectId
+    ? `/${projectId}/chat/api/vote`
+    : '/chat/api/vote';
+  const chatUrlBase = projectId ? `/${projectId}/chat` : '/chat';
 
   const {
     messages,
@@ -49,7 +59,7 @@ export function Chat({
     data,
   } = useChat({
     id,
-    api: '/chat/api/chat',
+    api: apiEndpoint,
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -60,7 +70,11 @@ export function Chat({
       selectedChatModel: initialChatModel,
     }),
     onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
+      mutate(
+        unstable_serialize((index, previousPageData) =>
+          getChatHistoryPaginationKey(index, previousPageData, projectId || ''),
+        ),
+      );
     },
     onError: (error) => {
       toast({
@@ -83,12 +97,12 @@ export function Chat({
       });
 
       setHasAppendedQuery(true);
-      window.history.replaceState({}, '', `/chat/${id}`);
+      window.history.replaceState({}, '', `${chatUrlBase}/${id}`);
     }
-  }, [query, append, hasAppendedQuery, id]);
+  }, [query, append, hasAppendedQuery, id, chatUrlBase]);
 
   const { data: votes } = useSWR<Array<Vote>>(
-    messages.length >= 2 ? `/chat/api/vote?chatId=${id}` : null,
+    messages.length >= 2 ? `${voteEndpoint}?chatId=${id}` : null,
     fetcher,
   );
 
@@ -136,6 +150,7 @@ export function Chat({
               attachments={attachments}
               setAttachments={setAttachments}
               setMessages={setMessages}
+              projectId={projectId}
             />
           )}
         </form>
@@ -156,6 +171,7 @@ export function Chat({
         reload={reload}
         votes={votes}
         isReadonly={isReadonly}
+        projectId={projectId}
       />
     </>
   );

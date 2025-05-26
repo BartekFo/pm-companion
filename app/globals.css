@@ -99,6 +99,7 @@
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.5rem;
+  --shadow-1: 0px 4px 10px 0px #3B2A7F1F;
   --shadow-2xs: 0px 1px 6px 0px rgba(0, 0, 0, 0.07);
   --shadow-xs: 0px 1px 6px 0px hsl(0 0% 0% / 0.07);
   --shadow-sm: 0px 1px 6px 0px hsl(0 0% 0% / 0.15), 0px 1px 2px -1px
@@ -239,7 +240,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-
+  --shadow-1: var(--shadow-1);
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);

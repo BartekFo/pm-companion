@@ -37,6 +37,7 @@ function PureMultimodalInput({
   setMessages,
   handleSubmit,
   className,
+  projectId,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -48,9 +49,16 @@ function PureMultimodalInput({
   setMessages: UseChatHelpers['setMessages'];
   handleSubmit: UseChatHelpers['handleSubmit'];
   className?: string;
+  projectId?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+
+  // Determine endpoints based on project context
+  const chatUrlBase = projectId ? `/${projectId}/chat` : '/chat';
+  const uploadEndpoint = projectId
+    ? `/${projectId}/chat/api/files/upload`
+    : '/chat/api/files/upload';
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -102,7 +110,7 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
+    window.history.replaceState({}, '', `${chatUrlBase}/${chatId}`);
 
     handleSubmit(undefined, {
       experimental_attachments: attachments,
@@ -122,6 +130,7 @@ function PureMultimodalInput({
     setLocalStorageInput,
     width,
     chatId,
+    chatUrlBase,
   ]);
 
   const uploadFile = async (file: File) => {
@@ -129,7 +138,7 @@ function PureMultimodalInput({
     formData.append('file', file);
 
     try {
-      const response = await fetch('/chat/api/files/upload', {
+      const response = await fetch(uploadEndpoint, {
         method: 'POST',
         body: formData,
       });
@@ -174,7 +183,7 @@ function PureMultimodalInput({
         setUploadQueue([]);
       }
     },
-    [setAttachments],
+    [setAttachments, uploadFile],
   );
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();

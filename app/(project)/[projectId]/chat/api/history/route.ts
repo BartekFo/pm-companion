@@ -1,8 +1,11 @@
 import { auth } from '@/app/(auth)/auth';
 import type { NextRequest } from 'next/server';
-import { getChatsByUserId } from '@/lib/db/queries';
+import { getChatsByUserIdAndProjectId, getProjectById } from '@/lib/db/queries';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ projectId: string }> },
+) {
   const { searchParams } = request.nextUrl;
 
   const limit = Number.parseInt(searchParams.get('limit') || '10');
@@ -22,9 +25,17 @@ export async function GET(request: NextRequest) {
     return Response.json('Unauthorized!', { status: 401 });
   }
 
+  const { projectId } = await params;
+
+  const project = await getProjectById(projectId);
+  if (!project) {
+    return Response.json('Project not found!', { status: 404 });
+  }
+
   try {
-    const chats = await getChatsByUserId({
-      id: session.user.id,
+    const chats = await getChatsByUserIdAndProjectId({
+      userId: session.user.id,
+      projectId,
       limit,
       startingAfter,
       endingBefore,

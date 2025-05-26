@@ -72,10 +72,12 @@ export async function saveChat({
   id,
   userId,
   title,
+  projectId,
 }: {
   id: string;
   userId: string;
   title: string;
+  projectId?: string;
 }) {
   try {
     return await db.insert(chat).values({
@@ -83,6 +85,7 @@ export async function saveChat({
       createdAt: new Date(),
       userId,
       title,
+      projectId,
     });
   } catch (error) {
     console.error('Failed to save chat in database');
@@ -727,6 +730,80 @@ export async function deleteProjectMember(memberId: string) {
     return deletedMember;
   } catch (error) {
     console.error('Failed to delete project member from database');
+    throw error;
+  }
+}
+
+export async function getChatsByUserIdAndProjectId({
+  userId,
+  projectId,
+  limit,
+  startingAfter,
+  endingBefore,
+}: {
+  userId: string;
+  projectId: string;
+  limit: number;
+  startingAfter: string | null;
+  endingBefore: string | null;
+}) {
+  try {
+    const extendedLimit = limit + 1;
+
+    const query = (whereCondition?: SQL<any>) =>
+      db
+        .select()
+        .from(chat)
+        .where(
+          whereCondition
+            ? and(
+                whereCondition,
+                eq(chat.userId, userId),
+                eq(chat.projectId, projectId),
+              )
+            : and(eq(chat.userId, userId), eq(chat.projectId, projectId)),
+        )
+        .orderBy(desc(chat.createdAt))
+        .limit(extendedLimit);
+
+    let filteredChats: Array<Chat> = [];
+
+    if (startingAfter) {
+      const [selectedChat] = await db
+        .select()
+        .from(chat)
+        .where(eq(chat.id, startingAfter))
+        .limit(1);
+
+      if (!selectedChat) {
+        throw new Error(`Chat with id ${startingAfter} not found`);
+      }
+
+      filteredChats = await query(gt(chat.createdAt, selectedChat.createdAt));
+    } else if (endingBefore) {
+      const [selectedChat] = await db
+        .select()
+        .from(chat)
+        .where(eq(chat.id, endingBefore))
+        .limit(1);
+
+      if (!selectedChat) {
+        throw new Error(`Chat with id ${endingBefore} not found`);
+      }
+
+      filteredChats = await query(lt(chat.createdAt, selectedChat.createdAt));
+    } else {
+      filteredChats = await query();
+    }
+
+    const hasMore = filteredChats.length > limit;
+
+    return {
+      chats: hasMore ? filteredChats.slice(0, limit) : filteredChats,
+      hasMore,
+    };
+  } catch (error) {
+    console.error('Failed to get chats by user and project from database');
     throw error;
   }
 }
