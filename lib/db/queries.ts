@@ -807,3 +807,23 @@ export async function getChatsByUserIdAndProjectId({
     throw error;
   }
 }
+
+export async function getProjectContext(projectId: string, query: string) {
+  try {
+    const files = await getProjectFiles(projectId);
+
+    return {
+      projectFiles: files.map((file) => ({
+        fileName: file.fileName,
+        contentType: file.contentType,
+        preview:
+          file.content.substring(0, 500) +
+          (file.content.length > 500 ? '...' : ''),
+      })),
+      totalFiles: files.length,
+    };
+  } catch (error) {
+    console.error('Failed to get project context from database');
+    throw error;
+  }
+}

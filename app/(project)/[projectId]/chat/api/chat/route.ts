@@ -35,6 +35,7 @@ import {
 import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
+import { retrieveProjectContext, formatContextForPrompt } from '@/lib/ai/rag';
 
 export const maxDuration = 60;
 
@@ -131,6 +132,24 @@ export async function POST(
       message,
     });
 
+    const userMessageContent = message.parts
+      .filter((part: any) => part.type === 'text')
+      .map((part: any) => part.text)
+      .join(' ');
+
+    let projectContext = '';
+    try {
+      console.log('userMessageContent', userMessageContent);
+      const retrievedContext = await retrieveProjectContext(
+        projectId,
+        userMessageContent,
+      );
+      projectContext = formatContextForPrompt(retrievedContext);
+      console.log('projectContext', projectContext);
+    } catch (error) {
+      console.error('Failed to retrieve project context:', error);
+    }
+
     const { longitude, latitude, city, country } = geolocation(request);
 
     const requestHints: RequestHints = {
@@ -165,7 +184,11 @@ export async function POST(
       execute: (dataStream) => {
         const result = streamText({
           model: model,
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt({
+            selectedChatModel,
+            requestHints,
+            projectContext: projectContext || undefined,
+          }),
           messages,
           maxSteps: 5,
           onFinish: async ({ response }) => {
