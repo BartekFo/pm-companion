@@ -23,14 +23,12 @@ export async function retrieveProjectContext(
     similarityThreshold?: number;
   } = {},
 ): Promise<RetrievedContext> {
-  const { maxChunks = 5, similarityThreshold = 0.7 } = options;
+  const { maxChunks = 5, similarityThreshold = 0.5 } = options;
 
   try {
     const queryEmbedding = await generateEmbedding(userQuery);
-    console.log('queryEmbedding', queryEmbedding);
 
     const projectFiles = await getProjectFiles(projectId);
-    console.log('projectFiles', projectFiles);
 
     const allEmbeddings: Array<{
       id: string;
@@ -45,7 +43,6 @@ export async function retrieveProjectContext(
       try {
         const fileEmbeddings = await getProjectFileEmbeddings(file.id);
         fileEmbeddings.forEach((embedding) => {
-          console.log('embedding', embedding.chunkContent);
           allEmbeddings.push({
             id: embedding.id,
             fileId: embedding.fileId,
@@ -67,10 +64,9 @@ export async function retrieveProjectContext(
       ...item,
       similarity: cosineSimilarity(queryEmbedding, item.embedding),
     }));
-    console.log('similarities', similarities);
 
     const relevantChunks = similarities
-      .filter((item) => item.similarity >= similarityThreshold)
+      // .filter((item) => item.similarity >= similarityThreshold)
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, maxChunks)
       .map((chunk) => ({

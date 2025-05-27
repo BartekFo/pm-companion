@@ -198,7 +198,6 @@ export const projectFile = pgTable('ProjectFile', {
   fileName: text('fileName').notNull(),
   contentType: varchar('contentType', { length: 100 }).notNull(),
   url: text('url').notNull(),
-  content: text('content').notNull(),
   projectId: uuid('projectId')
     .notNull()
     .references(() => project.id),
