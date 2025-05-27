@@ -77,7 +77,6 @@ export const register = async (
       validatedData.password,
     );
 
-    // Link user to any pending project invitations
     if (newUser) {
       await linkUserToProjects(newUser.id, validatedData.email);
     }
