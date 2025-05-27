@@ -514,7 +514,6 @@ export async function createProjectFile(data: {
   fileName: string;
   contentType: string;
   url: string;
-  content: string;
   projectId: string;
   userId: string;
 }) {
@@ -576,16 +575,60 @@ export async function createProjectMembers(data: {
   emails: string[];
 }) {
   try {
-    const members = data.emails.map((email) => ({
-      projectId: data.projectId,
-      email,
-      role: 'member' as const,
-      status: 'pending' as const,
-      invitedAt: new Date(),
-      createdAt: new Date(),
-    }));
+    const existingUsers = await db
+      .select({ id: user.id, email: user.email })
+      .from(user)
+      .where(inArray(user.email, data.emails));
 
-    return await db.insert(projectMember).values(members).returning();
+    const existingUserEmails = new Set(existingUsers.map((u) => u.email));
+
+    const pendingEmails = data.emails.filter(
+      (email) => !existingUserEmails.has(email),
+    );
+
+    const allMembers = [];
+
+    if (existingUsers.length > 0) {
+      const existingUserMembers = existingUsers.map((user) => ({
+        projectId: data.projectId,
+        email: user.email,
+        userId: user.id,
+        role: 'member' as const,
+        status: 'accepted' as const,
+        joinedAt: new Date(),
+        invitedAt: new Date(),
+        createdAt: new Date(),
+      }));
+
+      const acceptedMembers = await db
+        .insert(projectMember)
+        .values(existingUserMembers)
+        .returning();
+      allMembers.push(...acceptedMembers);
+
+      for (const user of existingUsers) {
+        revalidateTag(`user-projects-${user.id}`);
+      }
+    }
+
+    if (pendingEmails.length > 0) {
+      const pendingMembers = pendingEmails.map((email) => ({
+        projectId: data.projectId,
+        email,
+        role: 'member' as const,
+        status: 'pending' as const,
+        invitedAt: new Date(),
+        createdAt: new Date(),
+      }));
+
+      const pendingMemberResults = await db
+        .insert(projectMember)
+        .values(pendingMembers)
+        .returning();
+      allMembers.push(...pendingMemberResults);
+    }
+
+    return allMembers;
   } catch (error) {
     console.error('Failed to create project members in database');
     throw error;
@@ -609,7 +652,6 @@ export async function linkUserToProjects(userId: string, email: string) {
       )
       .returning();
 
-    // Invalidate cache for the user who just joined projects
     if (result.length > 0) {
       revalidateTag(`user-projects-${userId}`);
     }
@@ -846,9 +888,6 @@ export async function getProjectContext(projectId: string, query: string) {
       projectFiles: files.map((file) => ({
         fileName: file.fileName,
         contentType: file.contentType,
-        preview:
-          file.content.substring(0, 500) +
-          (file.content.length > 500 ? '...' : ''),
       })),
       totalFiles: files.length,
     };
