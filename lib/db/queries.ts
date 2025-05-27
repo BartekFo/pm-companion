@@ -15,6 +15,7 @@ import {
 } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import { unstable_cache, revalidateTag } from 'next/cache';
 
 import {
   user,
@@ -500,6 +501,8 @@ export async function createProject(data: {
       })
       .returning();
 
+    revalidateTag(`user-projects-${data.userId}`);
+
     return newProject;
   } catch (error) {
     console.error('Failed to create project in database');
@@ -591,7 +594,7 @@ export async function createProjectMembers(data: {
 
 export async function linkUserToProjects(userId: string, email: string) {
   try {
-    return await db
+    const result = await db
       .update(projectMember)
       .set({
         userId,
@@ -605,6 +608,13 @@ export async function linkUserToProjects(userId: string, email: string) {
         ),
       )
       .returning();
+
+    // Invalidate cache for the user who just joined projects
+    if (result.length > 0) {
+      revalidateTag(`user-projects-${userId}`);
+    }
+
+    return result;
   } catch (error) {
     console.error('Failed to link user to projects');
     throw error;
@@ -612,38 +622,47 @@ export async function linkUserToProjects(userId: string, email: string) {
 }
 
 export async function getUserProjects(userId: string) {
-  try {
-    const ownedProjects = await db
-      .select({
-        id: project.id,
-        name: project.name,
-        createdAt: project.createdAt,
-        role: sql<string>`'owner'`,
-      })
-      .from(project)
-      .where(eq(project.userId, userId));
+  return unstable_cache(
+    async () => {
+      try {
+        const ownedProjects = await db
+          .select({
+            id: project.id,
+            name: project.name,
+            createdAt: project.createdAt,
+            role: sql<string>`'owner'`,
+          })
+          .from(project)
+          .where(eq(project.userId, userId));
 
-    const memberProjects = await db
-      .select({
-        id: project.id,
-        name: project.name,
-        createdAt: project.createdAt,
-        role: projectMember.role,
-      })
-      .from(project)
-      .innerJoin(projectMember, eq(projectMember.projectId, project.id))
-      .where(
-        and(
-          eq(projectMember.userId, userId),
-          eq(projectMember.status, 'accepted'),
-        ),
-      );
+        const memberProjects = await db
+          .select({
+            id: project.id,
+            name: project.name,
+            createdAt: project.createdAt,
+            role: projectMember.role,
+          })
+          .from(project)
+          .innerJoin(projectMember, eq(projectMember.projectId, project.id))
+          .where(
+            and(
+              eq(projectMember.userId, userId),
+              eq(projectMember.status, 'accepted'),
+            ),
+          );
 
-    return [...ownedProjects, ...memberProjects];
-  } catch (error) {
-    console.error('Failed to get user projects');
-    throw error;
-  }
+        return [...ownedProjects, ...memberProjects];
+      } catch (error) {
+        console.error('Failed to get user projects');
+        throw error;
+      }
+    },
+    [`user-projects-${userId}`],
+    {
+      revalidate: 300, // 5 minutes
+      tags: [`user-projects-${userId}`, 'projects'],
+    },
+  )();
 }
 
 export async function getProjectFileEmbeddings(fileId: string) {
@@ -694,6 +713,17 @@ export async function updateProject(projectId: string, data: { name: string }) {
       .set(data)
       .where(eq(project.id, projectId))
       .returning();
+
+    // Invalidate cache for project owner
+    const projectData = await db
+      .select({ userId: project.userId })
+      .from(project)
+      .where(eq(project.id, projectId))
+      .limit(1);
+
+    if (projectData[0]) {
+      revalidateTag(`user-projects-${projectData[0].userId}`);
+    }
 
     return updatedProject;
   } catch (error) {
@@ -826,4 +856,12 @@ export async function getProjectContext(projectId: string, query: string) {
     console.error('Failed to get project context from database');
     throw error;
   }
+}
+
+export function clearUserProjectsCache(userId: string) {
+  revalidateTag(`user-projects-${userId}`);
+}
+
+export function clearAllProjectsCache() {
+  revalidateTag('projects');
 }
