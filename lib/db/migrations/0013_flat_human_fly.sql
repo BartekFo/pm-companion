@@ -1,0 +1,1 @@
+ALTER TABLE "ProjectFile" DROP COLUMN "content";
