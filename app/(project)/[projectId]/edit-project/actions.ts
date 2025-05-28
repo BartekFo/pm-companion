@@ -14,6 +14,9 @@ import { ROUTES } from '@/lib/constants/routes';
 import { del } from '@vercel/blob';
 import { redirect } from 'next/navigation';
 import { uploadFilesWithEmbeddings } from '@/lib/files-upload';
+import { MAX_FILES_PER_PROJECT } from '@/lib/constants';
+import { checkProjectManagement } from '@/lib/auth/permission-checks';
+import { ForbiddenError } from '@casl/ability';
 
 const updateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -37,8 +40,6 @@ const FileSchema = z.object({
     }),
 });
 
-const MAX_FILES = 10;
-
 export async function updateProjectAction(
   _prevState: UpdateProjectState,
   formData: FormData,
@@ -59,7 +60,7 @@ export async function updateProjectAction(
 
   const validFiles = files
     .filter((file) => FileSchema.safeParse({ file }).success)
-    .slice(0, MAX_FILES);
+    .slice(0, MAX_FILES_PER_PROJECT);
 
   const result = updateProjectSchema.safeParse(rawData);
   if (!result.success) {
@@ -70,6 +71,21 @@ export async function updateProjectAction(
   }
 
   const { name, teamMembers, projectId } = result.data;
+
+  try {
+    await checkProjectManagement(projectId);
+  } catch (error) {
+    if (error instanceof ForbiddenError) {
+      return {
+        status: 'failed',
+        errors: ['You do not have permission to edit this project'],
+      };
+    }
+    return {
+      status: 'failed',
+      errors: ['Permission check failed'],
+    };
+  }
 
   try {
     await updateProject(projectId, { name });

@@ -24,6 +24,8 @@
   "dependencies": {
     "@ai-sdk/google": "1.2.18",
     "@ai-sdk/react": "1.2.12",
+    "@casl/ability": "^6.7.3",
+    "@casl/react": "^5.0.0",
     "@codemirror/lang-javascript": "6.2.4",
     "@codemirror/lang-python": "6.2.1",
     "@codemirror/state": "6.5.2",

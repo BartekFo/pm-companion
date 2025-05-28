@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { ROUTES } from '@/lib/constants/routes';
 import { redirect } from 'next/navigation';
 import { uploadFilesWithEmbeddings } from '@/lib/files-upload';
+import { MAX_FILES_PER_PROJECT } from '@/lib/constants';
 
 const createProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -29,8 +30,6 @@ const FileSchema = z.object({
     }),
 });
 
-const MAX_FILES = 10;
-
 export async function createProjectAction(
   _prevState: CreateProjectState,
   formData: FormData,
@@ -48,7 +47,7 @@ export async function createProjectAction(
   const files = formData.getAll('files') as File[];
   const validFiles = files
     .filter((file) => FileSchema.safeParse({ file }).success)
-    .slice(0, MAX_FILES);
+    .slice(0, MAX_FILES_PER_PROJECT);
 
   const result = createProjectSchema.safeParse(rawData);
   if (!result.success) {

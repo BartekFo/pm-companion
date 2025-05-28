@@ -10,6 +10,7 @@ import {
   gte,
   inArray,
   lt,
+  or,
   type SQL,
   sql,
 } from 'drizzle-orm';
@@ -33,6 +34,7 @@ import {
   projectFile,
   projectMember,
   type ProjectFile,
+  type ProjectMember,
   projectFileEmbedding,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
@@ -740,10 +742,23 @@ export async function getProjectMembers(projectId: string) {
     return await db
       .select()
       .from(projectMember)
-      .where(eq(projectMember.projectId, projectId))
-      .orderBy(asc(projectMember.createdAt));
+      .where(eq(projectMember.projectId, projectId));
   } catch (error) {
     console.error('Failed to get project members from database');
+    throw error;
+  }
+}
+
+export async function getProjectMemberships(
+  userId: string,
+): Promise<ProjectMember[]> {
+  try {
+    return await db
+      .select()
+      .from(projectMember)
+      .where(eq(projectMember.userId, userId));
+  } catch (error) {
+    console.error('Failed to get project memberships from database');
     throw error;
   }
 }
@@ -903,4 +918,74 @@ export function clearUserProjectsCache(userId: string) {
 
 export function clearAllProjectsCache() {
   revalidateTag('projects');
+}
+
+export async function getUserProjectsWithRoles(userId: string) {
+  try {
+    return await db
+      .select({
+        project: project,
+        membership: projectMember,
+      })
+      .from(project)
+      .leftJoin(projectMember, eq(projectMember.projectId, project.id))
+      .where(
+        or(
+          eq(project.userId, userId),
+          and(
+            eq(projectMember.userId, userId),
+            eq(projectMember.status, 'accepted'),
+          ),
+        ),
+      );
+  } catch (error) {
+    console.error('Failed to get user projects with roles from database');
+    throw error;
+  }
+}
+
+export async function canUserAccessProject(
+  userId: string,
+  projectId: string,
+): Promise<boolean> {
+  try {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(project)
+      .leftJoin(projectMember, eq(projectMember.projectId, project.id))
+      .where(
+        and(
+          eq(project.id, projectId),
+          or(
+            eq(project.userId, userId),
+            and(
+              eq(projectMember.userId, userId),
+              eq(projectMember.status, 'accepted'),
+            ),
+          ),
+        ),
+      );
+
+    return result[0]?.count > 0;
+  } catch (error) {
+    console.error('Failed to check user project access from database');
+    throw error;
+  }
+}
+
+export async function isUserProjectPM(
+  userId: string,
+  projectId: string,
+): Promise<boolean> {
+  try {
+    const result = await db
+      .select({ userId: project.userId })
+      .from(project)
+      .where(and(eq(project.id, projectId), eq(project.userId, userId)));
+
+    return result.length > 0;
+  } catch (error) {
+    console.error('Failed to check if user is project PM from database');
+    throw error;
+  }
 }
