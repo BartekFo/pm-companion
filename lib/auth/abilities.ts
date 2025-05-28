@@ -35,55 +35,53 @@ export function defineAbilityFor(
   user: Pick<User, 'id' | 'role'>,
   projectMemberships: ProjectMember[] = [],
 ): AppAbility {
-  const { can, cannot, build } = new AbilityBuilder<AppAbility>(
-    createMongoAbility,
-  );
+  const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
+
+  const ownedProjectIds = new Set<string>();
+  const accessibleProjectIds = new Set<string>();
+
+  for (const membership of projectMemberships) {
+    if (membership.userId === user.id) {
+      if (membership.status === 'accepted') {
+        accessibleProjectIds.add(membership.projectId);
+      }
+      if (membership.role === 'pm') {
+        ownedProjectIds.add(membership.projectId);
+      }
+    }
+  }
+
+  const ownedProjectIdsArray = Array.from(ownedProjectIds);
+  const accessibleProjectIdsArray = Array.from(accessibleProjectIds);
 
   if (user.role === 'pm') {
     can('create', 'Project');
-
     can('manage', 'Project', { userId: user.id } as any);
 
-    can('invite', 'ProjectMember', {
-      projectId: { $in: getOwnedProjectIds(projectMemberships, user.id) },
-    } as any);
+    if (ownedProjectIdsArray.length > 0) {
+      can('invite', 'ProjectMember', {
+        projectId: { $in: ownedProjectIdsArray },
+      } as any);
+    }
   }
 
-  const accessibleProjectIds = getAccessibleProjectIds(
-    projectMemberships,
-    user.id,
-  );
-
-  can('read', 'Project', { id: { $in: accessibleProjectIds } } as any);
-  can('read', 'ProjectFile', {
-    projectId: { $in: accessibleProjectIds },
-  } as any);
-  can('create', 'Chat', { projectId: { $in: accessibleProjectIds } } as any);
-  can('read', 'Chat', { projectId: { $in: accessibleProjectIds } } as any);
-
-  can('upload', 'ProjectFile', {
-    projectId: { $in: accessibleProjectIds },
-  } as any);
+  if (accessibleProjectIdsArray.length > 0) {
+    can('read', 'Project', { id: { $in: accessibleProjectIdsArray } } as any);
+    can('read', 'ProjectFile', {
+      projectId: { $in: accessibleProjectIdsArray },
+    } as any);
+    can('create', 'Chat', {
+      projectId: { $in: accessibleProjectIdsArray },
+    } as any);
+    can('read', 'Chat', {
+      projectId: { $in: accessibleProjectIdsArray },
+    } as any);
+    can('upload', 'ProjectFile', {
+      projectId: { $in: accessibleProjectIdsArray },
+    } as any);
+  }
 
   can('update', 'User', { id: user.id } as any);
 
   return build();
-}
-
-function getOwnedProjectIds(
-  memberships: ProjectMember[],
-  userId: string,
-): string[] {
-  return memberships
-    .filter((m) => m.userId === userId && m.role === 'pm')
-    .map((m) => m.projectId);
-}
-
-function getAccessibleProjectIds(
-  memberships: ProjectMember[],
-  userId: string,
-): string[] {
-  return memberships
-    .filter((m) => m.userId === userId && m.status === 'accepted')
-    .map((m) => m.projectId);
 }

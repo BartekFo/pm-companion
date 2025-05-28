@@ -10,16 +10,24 @@ import {
   foreignKey,
   boolean,
   vector,
+  index,
 } from 'drizzle-orm/pg-core';
 
-export const user = pgTable('User', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  email: varchar('email', { length: 64 }).notNull(),
-  password: varchar('password', { length: 64 }),
-  role: varchar('role', { enum: ['member', 'pm'] })
-    .notNull()
-    .default('member'),
-});
+export const user = pgTable(
+  'User',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    email: varchar('email', { length: 64 }).notNull(),
+    password: varchar('password', { length: 64 }),
+    role: varchar('role', { enum: ['member', 'pm'] })
+      .notNull()
+      .default('member'),
+  },
+  (table) => [
+    index('user_role_idx').on(table.role),
+    index('user_email_idx').on(table.email),
+  ],
+);
 
 export type User = InferSelectModel<typeof user>;
 
@@ -178,21 +186,30 @@ export const project = pgTable(
 
 export type Project = InferSelectModel<typeof project>;
 
-export const projectMember = pgTable('ProjectMember', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  projectId: uuid('projectId')
-    .notNull()
-    .references(() => project.id),
-  email: varchar('email', { length: 64 }).notNull(),
-  userId: uuid('userId').references(() => user.id), // Null jeśli user nie ma jeszcze konta
-  role: varchar('role').notNull().default('member'),
-  status: varchar('status', { enum: ['pending', 'accepted', 'declined'] })
-    .notNull()
-    .default('pending'),
-  invitedAt: timestamp('invitedAt').notNull(),
-  joinedAt: timestamp('joinedAt'), // Kiedy user zaakceptował
-  createdAt: timestamp('createdAt').notNull(),
-});
+export const projectMember = pgTable(
+  'ProjectMember',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    projectId: uuid('projectId')
+      .notNull()
+      .references(() => project.id),
+    email: varchar('email', { length: 64 }).notNull(),
+    userId: uuid('userId').references(() => user.id), // Null jeśli user nie ma jeszcze konta
+    role: varchar('role').notNull().default('member'),
+    status: varchar('status', { enum: ['pending', 'accepted', 'declined'] })
+      .notNull()
+      .default('pending'),
+    invitedAt: timestamp('invitedAt').notNull(),
+    joinedAt: timestamp('joinedAt'), // Kiedy user zaakceptował
+    createdAt: timestamp('createdAt').notNull(),
+  },
+  (table) => [
+    index('project_member_user_idx').on(table.userId),
+    index('project_member_project_idx').on(table.projectId),
+    index('project_member_status_idx').on(table.status),
+    index('project_member_user_status_idx').on(table.userId, table.status),
+  ],
+);
 
 export type ProjectMember = InferSelectModel<typeof projectMember>;
 

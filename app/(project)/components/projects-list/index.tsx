@@ -17,7 +17,12 @@ export async function ProjectsList() {
   return (
     <div className="flex flex-wrap rounded-sm gap-2.5 p-6 border border-primary-200 max-w-5xl w-full min-h-104 bg-neutral-0/40">
       {projects.map((project) => (
-        <ProjectCard key={project.id} id={project.id} name={project.name} />
+        <ProjectCard
+          key={project.id}
+          id={project.id}
+          name={project.name}
+          role={project.role}
+        />
       ))}
       <CreateProjectButton />
     </div>

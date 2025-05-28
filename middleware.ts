@@ -35,16 +35,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (token) {
-    if (pathname.startsWith('/create-new-project') && token.role !== 'pm') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    if (pathname.includes('/edit-project') && token.role !== 'pm') {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-  }
-
   return NextResponse.next();
 }
 

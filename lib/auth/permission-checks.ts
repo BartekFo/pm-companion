@@ -12,9 +12,7 @@ export async function checkProjectAccess(projectId: string) {
 export async function checkProjectManagement(projectId: string) {
   const ability = await getCurrentUserAbility();
 
-  ForbiddenError.from(ability).throwUnlessCan('manage', 'Project', {
-    id: projectId,
-  } as any);
+  ForbiddenError.from(ability).throwUnlessCan('manage', 'Project');
 }
 
 export async function checkFileUpload(projectId: string) {

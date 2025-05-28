@@ -1,16 +1,22 @@
 'use client';
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode, useMemo } from 'react';
+import { createMongoAbility, type RawRuleOf } from '@casl/ability';
 import type { AppAbility } from './abilities';
 
 const AbilityContext = createContext<AppAbility | undefined>(undefined);
 
 interface AbilityProviderProps {
-  ability: AppAbility;
+  rules: RawRuleOf<AppAbility>[];
   children: ReactNode;
 }
 
-export function AbilityProvider({ ability, children }: AbilityProviderProps) {
+export function AbilityProvider({ rules, children }: AbilityProviderProps) {
+  // Reconstruct the ability from rules on the client side
+  const ability = useMemo(() => {
+    return createMongoAbility<AppAbility>(rules);
+  }, [rules]);
+
   return (
     <AbilityContext.Provider value={ability}>
       {children}

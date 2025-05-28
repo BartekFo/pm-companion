@@ -5,7 +5,6 @@ import { useWindowSize } from 'usehooks-ts';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from './ui/sidebar';
-import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import type { Session } from 'next-auth';
 import {
@@ -21,6 +20,8 @@ import type { Project } from '@/lib/db/schema';
 import { Pencil, PlusIcon } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
 import Link from 'next/link';
+import { Can } from './auth/can';
+import { memo } from 'react';
 
 interface IChatHeaderProps {
   chatId: string;
@@ -68,20 +69,24 @@ function PureChatHeader({
                   {project.name}
                 </div>
               </SelectItem>
-              <Link
-                className="absolute right-0.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
-                href={ROUTES.PROJECT.EDIT_PROJECT(project.id)}
-              >
-                <Pencil className="h-4 w-4 text-primary-400 " />
-              </Link>
+              <Can action="manage" subject="Project">
+                <Link
+                  className="absolute right-0.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
+                  href={ROUTES.PROJECT.EDIT_PROJECT(project.id)}
+                >
+                  <Pencil className="h-4 w-4 text-primary-400 " />
+                </Link>
+              </Can>
             </div>
           ))}
-          <Link href={ROUTES.PROJECT.CREATE_NEW_PROJECT}>
-            <div className="pl-8 p-1.5 pr-2 font-medium text-sm flex items-center justify-between w-full">
-              New Project
-              <PlusIcon className="text-primary-400 w-4 h-4" />
-            </div>
-          </Link>
+          <Can action="create" subject="Project">
+            <Link href={ROUTES.PROJECT.CREATE_NEW_PROJECT}>
+              <div className="pl-8 p-1.5 pr-2 font-medium text-sm flex items-center justify-between w-full">
+                New Project
+                <PlusIcon className="text-primary-400 w-4 h-4" />
+              </div>
+            </Link>
+          </Can>
         </SelectContent>
       </Select>
 

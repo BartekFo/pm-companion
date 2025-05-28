@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { SWRConfig } from 'swr';
 import { auth } from '../(auth)/auth';
 import { redirect } from 'next/navigation';
+import { AbilityProvider } from '@/lib/auth/ability-context';
+import { getCurrentUserRules } from '@/lib/auth/get-ability';
 
 export const metadata: Metadata = {
   title: 'PM Companion',
@@ -20,17 +22,21 @@ export default async function ProjectLayout({ children }: ProjectLayoutProps) {
     redirect('/login');
   }
 
+  const rules = await getCurrentUserRules();
+
   return (
-    <SWRConfig
-      value={{
-        fallback: {
-          '/api/projects': getUserProjects(session.user.id),
-        },
-      }}
-    >
-      <div className="main-gradient p-6 h-dvh flex flex-col items-center justify-center gap-10">
-        {children}
-      </div>
-    </SWRConfig>
+    <AbilityProvider rules={rules}>
+      <SWRConfig
+        value={{
+          fallback: {
+            '/api/projects': getUserProjects(session.user.id),
+          },
+        }}
+      >
+        <div className="main-gradient p-6 h-dvh flex flex-col items-center justify-center gap-10">
+          {children}
+        </div>
+      </SWRConfig>
+    </AbilityProvider>
   );
 }

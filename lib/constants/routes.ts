@@ -7,8 +7,4 @@ export const ROUTES = {
     CHAT_WITH_ID: (projectId: string, chatId: string) =>
       `/${projectId}/chat/${chatId}`,
   },
-  CHAT: {
-    ROOT: '/chat',
-    WITH_ID: (id: string) => `/chat/${id}`,
-  },
 } as const;

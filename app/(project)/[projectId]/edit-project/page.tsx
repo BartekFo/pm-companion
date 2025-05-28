@@ -6,6 +6,9 @@ import {
   EditProjectFormDataLayerSkeleton,
 } from './components/edit-project-form-data-layer';
 import { Suspense } from 'react';
+import { checkProjectManagement } from '@/lib/auth/permission-checks';
+import { ForbiddenError } from '@casl/ability';
+import { ROUTES } from '@/lib/constants/routes';
 
 interface EditProjectPageProps {
   params: Promise<{ projectId: string }>;
@@ -21,6 +24,15 @@ export default async function EditProjectPage({
   }
 
   const { projectId } = await params;
+
+  try {
+    await checkProjectManagement(projectId);
+  } catch (error) {
+    if (error instanceof ForbiddenError) {
+      redirect(ROUTES.PROJECT.CHAT(projectId));
+    }
+    redirect(ROUTES.PROJECT.ROOT);
+  }
 
   return (
     <>

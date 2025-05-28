@@ -607,10 +607,6 @@ export async function createProjectMembers(data: {
         .values(existingUserMembers)
         .returning();
       allMembers.push(...acceptedMembers);
-
-      for (const user of existingUsers) {
-        revalidateTag(`user-projects-${user.id}`);
-      }
     }
 
     if (pendingEmails.length > 0) {
@@ -813,6 +809,10 @@ export async function deleteProjectMember(memberId: string) {
       .delete(projectMember)
       .where(eq(projectMember.id, memberId))
       .returning();
+
+    if (deletedMember?.userId) {
+      revalidateTag(`user-projects-${deletedMember.userId}`);
+    }
 
     return deletedMember;
   } catch (error) {
