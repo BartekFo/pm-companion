@@ -13,7 +13,7 @@ export const Greeting = () => {
         exit={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        <Heading3 className="text-center">Hi 👋</Heading3>
+        <Heading3 className="text-center">Hi 👋🏻</Heading3>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

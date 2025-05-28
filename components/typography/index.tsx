@@ -8,7 +8,7 @@ export function Heading1({
   return (
     <h1
       className={cn(
-        'scroll-m-20 font-extrabold text-4xl tracking-tight lg:text-5xl text-primary-950',
+        'scroll-m-20 font-semibold text-4xl tracking-tight lg:text-5xl text-primary-950',
         className,
       )}
       {...props}

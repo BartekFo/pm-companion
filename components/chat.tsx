@@ -1,6 +1,6 @@
 'use client';
 
-import type { Attachment, UIMessage } from 'ai';
+import type { UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
@@ -106,7 +106,6 @@ export function Chat({
     fetcher,
   );
 
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
   useAutoResume({
@@ -148,8 +147,6 @@ export function Chat({
               handleSubmit={handleSubmit}
               status={status}
               stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
               setMessages={setMessages}
               projectId={projectId}
             />
@@ -164,8 +161,6 @@ export function Chat({
         handleSubmit={handleSubmit}
         status={status}
         stop={stop}
-        attachments={attachments}
-        setAttachments={setAttachments}
         append={append}
         messages={messages}
         setMessages={setMessages}
