@@ -25,7 +25,6 @@ export default async function ChatLayout({
 
   const { projectId } = await params;
 
-  // Sprawdź czy projekt istnieje i user ma dostęp
   const project = await getProjectById(projectId);
   if (!project) {
     redirect('/');
@@ -40,7 +39,7 @@ export default async function ChatLayout({
         strategy="beforeInteractive"
       />
       <SidebarProvider defaultOpen={!isCollapsed}>
-        <AppSidebar user={session.user} />
+        <AppSidebar projectId={project.id} user={session.user} />
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>
     </>

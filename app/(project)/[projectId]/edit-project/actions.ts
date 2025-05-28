@@ -126,7 +126,7 @@ export async function updateProjectAction(
     };
   }
 
-  revalidatePath(`/project/${projectId}/edit-project`);
-  revalidatePath(ROUTES.PROJECT.ROOT);
-  redirect(ROUTES.PROJECT.ROOT);
+  revalidatePath(ROUTES.PROJECT.EDIT_PROJECT(projectId));
+  revalidatePath(ROUTES.PROJECT.CHAT(projectId));
+  redirect(ROUTES.PROJECT.CHAT(projectId));
 }

@@ -3,7 +3,6 @@
 import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
-import { PlusIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import { Button } from '@/components/ui/button';
@@ -18,8 +17,15 @@ import {
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import AppLogo from './app-logo';
+import { PlusIcon } from 'lucide-react';
+import { ROUTES } from '@/lib/constants/routes';
 
-export function AppSidebar({ user }: { user: User | undefined }) {
+interface IAppSidebarProps {
+  user: User | undefined;
+  projectId: string;
+}
+
+export function AppSidebar({ user, projectId }: IAppSidebarProps) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
 
@@ -36,7 +42,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               className="flex flex-row gap-3 items-center"
             >
               <span className="cursor-pointer max-w-48">
-                <AppLogo />
+                <AppLogo isHorizontal />
               </span>
             </Link>
             <Tooltip>
@@ -47,11 +53,11 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   className="p-2 h-fit"
                   onClick={() => {
                     setOpenMobile(false);
-                    router.push('/');
+                    router.push(ROUTES.PROJECT.CHAT(projectId));
                     router.refresh();
                   }}
                 >
-                  <PlusIcon />
+                  <PlusIcon className="h-4.5 w-4.5 text-primary-400" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>

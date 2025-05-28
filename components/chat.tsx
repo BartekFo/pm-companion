@@ -121,6 +121,7 @@ export function Chat({
     <>
       <div className="flex flex-col min-w-0 h-dvh">
         <ChatHeader
+          projectId={projectId || ''}
           chatId={id}
           selectedModelId={initialChatModel}
           isReadonly={isReadonly}

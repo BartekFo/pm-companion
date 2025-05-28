@@ -19,14 +19,11 @@ import {
 } from '@/lib/db/queries';
 import { randomUUID } from 'node:crypto';
 import { generateUUID, getTrailingMessageId } from '@/lib/utils';
-import { generateTitleFromUserMessage } from '@/app/(project)/chat/actions';
+import { generateTitleFromUserMessage } from '@/app/(project)/[projectId]/chat/actions';
 import { isProductionEnvironment } from '@/lib/constants';
 import { getLanguageModelWithTracing } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
-import {
-  postRequestBodySchema,
-  type PostRequestBody,
-} from '@/app/(project)/chat/api/chat/schema';
+import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
 import {
   createResumableStreamContext,

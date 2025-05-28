@@ -66,11 +66,15 @@ export async function createProjectAction(
         .filter(Boolean)
     : [];
 
+  let projectId: string;
+
   try {
     const project = await createProject({
       name,
       userId: session.user.id,
     });
+
+    projectId = project.id;
 
     if (memberEmails.length > 0) {
       await createProjectMembers({
@@ -91,5 +95,5 @@ export async function createProjectAction(
   }
 
   revalidatePath(ROUTES.PROJECT.ROOT);
-  redirect(ROUTES.PROJECT.ROOT);
+  redirect(ROUTES.PROJECT.CHAT(projectId));
 }
