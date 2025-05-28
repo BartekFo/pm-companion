@@ -15,17 +15,20 @@ import {
 import { memo } from 'react';
 import equal from 'fast-deep-equal';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 export function PureMessageActions({
   chatId,
   message,
   vote,
   isLoading,
+  className,
 }: {
   chatId: string;
   message: Message;
   vote: Vote | undefined;
   isLoading: boolean;
+  className?: string;
 }) {
   const { mutate } = useSWRConfig();
   const [_, copyToClipboard] = useCopyToClipboard();
@@ -35,7 +38,7 @@ export function PureMessageActions({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex flex-row gap-2">
+      <div className={cn('flex flex-row gap-2', className)}>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

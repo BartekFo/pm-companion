@@ -188,6 +188,7 @@ const PurePreviewMessage = ({
                 message={message}
                 vote={vote}
                 isLoading={isLoading}
+                className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-100"
               />
             )}
           </div>
