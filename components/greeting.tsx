@@ -11,7 +11,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.2 }}
       >
         <Heading3 className="text-center">Hi 👋🏻</Heading3>
       </motion.div>
@@ -19,7 +19,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 0.3 }}
       >
         <Heading1 className="text-center">
           What would you like to know?
@@ -29,7 +29,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.4 }}
       >
         <LeadText className="text-center">
           Ask about business requirements, priorities, or open questions. <br />

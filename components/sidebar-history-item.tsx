@@ -13,22 +13,30 @@ import {
 } from './ui/dropdown-menu';
 import { MoreHorizontalIcon, TrashIcon } from './icons';
 import { memo } from 'react';
+import { ROUTES } from '@/lib/constants/routes';
+
+interface IChatItemProps {
+  chat: Chat;
+  isActive: boolean;
+  onDelete: (chatId: string) => void;
+  setOpenMobile: (open: boolean) => void;
+  projectId: string;
+}
 
 const PureChatItem = ({
   chat,
   isActive,
   onDelete,
   setOpenMobile,
-}: {
-  chat: Chat;
-  isActive: boolean;
-  onDelete: (chatId: string) => void;
-  setOpenMobile: (open: boolean) => void;
-}) => {
+  projectId,
+}: IChatItemProps) => {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
-        <Link href={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
+        <Link
+          href={ROUTES.PROJECT.CHAT_WITH_ID(projectId, chat.id)}
+          onClick={() => setOpenMobile(false)}
+        >
           <span>{chat.title}</span>
         </Link>
       </SidebarMenuButton>

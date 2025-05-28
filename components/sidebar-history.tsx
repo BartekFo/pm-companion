@@ -27,6 +27,7 @@ import { fetcher } from '@/lib/utils';
 import { ChatItem } from './sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from './icons';
+import { ROUTES } from '@/lib/constants/routes';
 
 type GroupedChats = {
   today: Chat[];
@@ -151,7 +152,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
     setShowDeleteDialog(false);
 
     if (deleteId === id) {
-      router.push('/');
+      router.push(ROUTES.PROJECT.CHAT(projectId));
     }
   };
 
@@ -230,6 +231,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                         </div>
                         {groupedChats.today.map((chat) => (
                           <ChatItem
+                            projectId={projectId}
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
@@ -250,6 +252,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                         </div>
                         {groupedChats.yesterday.map((chat) => (
                           <ChatItem
+                            projectId={projectId}
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
@@ -270,6 +273,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                         </div>
                         {groupedChats.lastWeek.map((chat) => (
                           <ChatItem
+                            projectId={projectId}
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
@@ -290,6 +294,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                         </div>
                         {groupedChats.lastMonth.map((chat) => (
                           <ChatItem
+                            projectId={projectId}
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
@@ -310,6 +315,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                         </div>
                         {groupedChats.older.map((chat) => (
                           <ChatItem
+                            projectId={projectId}
                             key={chat.id}
                             chat={chat}
                             isActive={chat.id === id}
