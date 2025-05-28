@@ -136,13 +136,11 @@ export async function POST(
 
     let projectContext = '';
     try {
-      console.log('userMessageContent', userMessageContent);
       const retrievedContext = await retrieveProjectContext(
         projectId,
         userMessageContent,
       );
       projectContext = formatContextForPrompt(retrievedContext);
-      console.log('projectContext', projectContext);
     } catch (error) {
       console.error('Failed to retrieve project context:', error);
     }

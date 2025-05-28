@@ -42,10 +42,11 @@ Follow these rules:
 3. Always answer using clear, simple, and professional language.
 4. Be thorough, but do not write more than necessary.
 5. Always include a direct quote or fragment from the documentation to support your answer.
-6. Do not answer questions if the information is not in the documentation.
+6. Do not answer questions if the information is not in the project context.
 7. In such cases, respond:
-- In Polish: "Nie ma takiej informacji w dokumentacji lub brakuje danych. Proszę dopytać zespół."
+- In Polish: "Nie ma takiej informacji w dokumentacji lub brakuje danych."
 - In English: "There is no such information in the documentation or the data is missing. Please follow up with the team."
+- List to user what is in project context if answer for their question is not in the project context.
 8. You may ask clarifying questions if the user's question is too vague or lacks context.
 You must always be precise, confident, and grounded in the source material. Never improvise.
 
@@ -80,9 +81,8 @@ export const systemPrompt = ({
 
   let basePrompt = regularPrompt;
 
-  // Add project context if available
   if (projectContext) {
-    basePrompt += `\n\n${projectContext}`;
+    basePrompt += `\n\nproject context: ${projectContext}`;
   }
 
   if (selectedChatModel === 'chat-model-reasoning') {
