@@ -7,8 +7,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import { SidebarLeftIcon } from './icons';
 import { Button } from './ui/button';
+import { PanelLeftClose } from 'lucide-react';
 
 export function SidebarToggle({
   className,
@@ -21,10 +21,10 @@ export function SidebarToggle({
         <Button
           data-testid="sidebar-toggle-button"
           onClick={toggleSidebar}
-          variant="outline"
-          className="md:px-2 md:h-fit"
+          variant="ghost"
+          className="p-2 [&_svg]:size-6"
         >
-          <SidebarLeftIcon size={16} />
+          <PanelLeftClose className="text-primary-500" />
         </Button>
       </TooltipTrigger>
       <TooltipContent align="start">Toggle Sidebar</TooltipContent>
