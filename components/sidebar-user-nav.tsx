@@ -1,6 +1,4 @@
 'use client';
-
-import { ChevronUp, UserIcon } from 'lucide-react';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
@@ -19,6 +17,8 @@ import {
 } from '@/components/ui/sidebar';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Text } from './typography';
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { status } = useSession();
@@ -29,18 +29,28 @@ export function SidebarUserNav({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton>
+            <SidebarMenuButton className="h-auto">
               {status === 'loading' ? (
                 <div className="size-4">
                   <LoaderIcon />
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <UserIcon />
-                  <span className="text-sm font-medium">{user.email}</span>
+                  <Avatar>
+                    <AvatarFallback>
+                      {user.email?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-1">
+                    <Text className="text-sm font-medium">
+                      {user.email?.split('@')[0]}
+                    </Text>
+                    <Text className="text-xs text-neutral-800">
+                      {user.email}
+                    </Text>
+                  </div>
                 </div>
               )}
-              <ChevronUp className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

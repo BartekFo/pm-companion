@@ -56,7 +56,7 @@ function PureChatHeader({
           router.push(ROUTES.PROJECT.CHAT(value));
         }}
       >
-        <SelectTrigger className="w-45 mx-auto border-none justify-start">
+        <SelectTrigger className="w-45 mx-auto border-none justify-start bg-transparent">
           <SelectValue placeholder="Select Project">
             {project?.name}
           </SelectValue>
@@ -71,7 +71,7 @@ function PureChatHeader({
               </SelectItem>
               <Can action="manage" subject="Project">
                 <Link
-                  className="absolute right-0.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100 cursor-pointer"
+                  className="absolute right-0.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-neutral-0 dark:hover:bg-neutral-600 cursor-pointer"
                   href={ROUTES.PROJECT.EDIT_PROJECT(project.id)}
                 >
                   <Pencil className="h-4 w-4 text-primary-400 " />

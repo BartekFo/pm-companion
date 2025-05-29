@@ -78,13 +78,7 @@ export function Text({
   ...props
 }: { children: React.ReactNode } & React.ComponentProps<'p'>) {
   return (
-    <p
-      className={cn(
-        'leading-7 [&:not(:first-child)]:mt-6 text-primary-950',
-        className,
-      )}
-      {...props}
-    >
+    <p className={cn('leading-7 text-primary-950', className)} {...props}>
       {children}
     </p>
   );

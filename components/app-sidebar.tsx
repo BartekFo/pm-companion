@@ -68,7 +68,10 @@ export function AppSidebar({ user, projectId }: IAppSidebarProps) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+      <SidebarFooter className="gap-6">
+        <div className="h-px w-full bg-neutral-0 dark:bg-neutral-800" />
+        {user && <SidebarUserNav user={user} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }
