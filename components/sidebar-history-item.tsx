@@ -34,6 +34,7 @@ const PureChatItem = ({
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
         <Link
+          className="pl-4 py-1.5"
           href={ROUTES.PROJECT.CHAT_WITH_ID(projectId, chat.id)}
           onClick={() => setOpenMobile(false)}
         >

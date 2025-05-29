@@ -28,6 +28,7 @@ import { ChatItem } from './sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from './icons';
 import { ROUTES } from '@/lib/constants/routes';
+import { OpenNewChatButton } from './open-new-chat-button';
 
 type GroupedChats = {
   today: Chat[];
@@ -156,21 +157,9 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
     }
   };
 
-  if (!user) {
-    return (
-      <SidebarGroup>
-        <SidebarGroupContent>
-          <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
-            Login to save and revisit previous chats!
-          </div>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    );
-  }
-
   if (isLoading) {
     return (
-      <SidebarGroup>
+      <SidebarGroup className="p-4">
         <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
           Today
         </div>
@@ -199,10 +188,11 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
   if (hasEmptyChatHistory) {
     return (
-      <SidebarGroup>
+      <SidebarGroup className="p-4">
         <SidebarGroupContent>
-          <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
+          <div className="text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2">
             Your conversations will appear here once you start chatting!
+            <OpenNewChatButton projectId={projectId} />
           </div>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -211,7 +201,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
 
   return (
     <>
-      <SidebarGroup>
+      <SidebarGroup className="p-4">
         <SidebarGroupContent>
           <SidebarMenu>
             {paginatedChatHistories &&
@@ -226,8 +216,9 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                   <div className="flex flex-col gap-6">
                     {groupedChats.today.length > 0 && (
                       <div>
-                        <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                        <div className="pb-2 text-xs text-sidebar-foreground/50 flex justify-between items-center">
                           Today
+                          <OpenNewChatButton projectId={projectId} />
                         </div>
                         {groupedChats.today.map((chat) => (
                           <ChatItem

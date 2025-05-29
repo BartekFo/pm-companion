@@ -1,31 +1,23 @@
 'use client';
 
 interface AppLogoProps {
-  isHorizontal?: boolean;
+  width?: number;
 }
 
-export default function AppLogo({ isHorizontal = false }: AppLogoProps) {
+export default function AppLogo({ width = 300 }: AppLogoProps) {
   return (
     <div>
       <img
         className="dark:hidden"
-        src={
-          isHorizontal
-            ? '/images/full-logo-horizontal-sidebar.svg'
-            : '/images/full-logo-white.svg'
-        }
+        src="/images/full-logo-horizontal-sidebar.svg"
         alt="POCompanion Logo"
-        width={isHorizontal ? 300 : 220}
+        width={width}
       />
       <img
         className="hidden dark:block"
-        src={
-          isHorizontal
-            ? '/images/full-logo-horizontal-sidebar-dark.svg'
-            : '/images/full-logo-dark.svg'
-        }
+        src="/images/full-logo-horizontal-sidebar-dark.svg"
         alt="POCompanion Logo"
-        width={isHorizontal ? 300 : 220}
+        width={width}
       />
     </div>
   );
