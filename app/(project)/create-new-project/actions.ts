@@ -66,6 +66,8 @@ export async function createProjectAction(
     : [];
 
   let projectId: string;
+  let publicAccessToken: string | null = null;
+  let batchId: string | null = null;
 
   try {
     const project = await createProject({
@@ -83,7 +85,14 @@ export async function createProjectAction(
     }
 
     if (validFiles.length > 0) {
-      await uploadFilesWithEmbeddings(validFiles, project.id, session.user.id);
+      const batchHandle = await uploadFilesWithEmbeddings(
+        validFiles,
+        project.id,
+        session.user.id,
+      );
+
+      publicAccessToken = batchHandle.publicAccessToken;
+      batchId = batchHandle.batchId;
     }
   } catch (error) {
     console.error('Failed to create project:', error);
@@ -94,5 +103,12 @@ export async function createProjectAction(
   }
 
   revalidatePath(ROUTES.PROJECT.ROOT);
-  redirect(ROUTES.PROJECT.CHAT(projectId));
+  const queryParams = new URLSearchParams();
+  if (publicAccessToken)
+    queryParams.set('publicAccessToken', publicAccessToken);
+  if (batchId) queryParams.set('batchId', batchId);
+  const queryString = queryParams.toString();
+  redirect(
+    `${ROUTES.PROJECT.CHAT(projectId)}${queryString ? `?${queryString}` : ''}`,
+  );
 }

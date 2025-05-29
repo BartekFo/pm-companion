@@ -87,6 +87,9 @@ export async function updateProjectAction(
     };
   }
 
+  let publicAccessToken: string | null = null;
+  let batchId: string | null = null;
+
   try {
     await updateProject(projectId, { name });
 
@@ -132,7 +135,13 @@ export async function updateProjectAction(
     }
 
     if (validFiles.length > 0) {
-      await uploadFilesWithEmbeddings(validFiles, projectId, session.user.id);
+      const batchHandle = await uploadFilesWithEmbeddings(
+        validFiles,
+        projectId,
+        session.user.id,
+      );
+      publicAccessToken = batchHandle.publicAccessToken;
+      batchId = batchHandle.batchId;
     }
   } catch (error) {
     console.error('Failed to update project:', error);
@@ -144,5 +153,12 @@ export async function updateProjectAction(
 
   revalidatePath(ROUTES.PROJECT.EDIT_PROJECT(projectId));
   revalidatePath(ROUTES.PROJECT.CHAT(projectId));
-  redirect(ROUTES.PROJECT.CHAT(projectId));
+  const queryParams = new URLSearchParams();
+  if (publicAccessToken)
+    queryParams.set('publicAccessToken', publicAccessToken);
+  if (batchId) queryParams.set('batchId', batchId);
+  const queryString = queryParams.toString();
+  redirect(
+    `${ROUTES.PROJECT.CHAT(projectId)}${queryString ? `?${queryString}` : ''}`,
+  );
 }

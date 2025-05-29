@@ -1,9 +1,10 @@
-import { task, logger } from '@trigger.dev/sdk/v3';
+import { task, logger, wait } from '@trigger.dev/sdk/v3';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { embedMany } from 'ai';
 import { google } from '@ai-sdk/google';
 import { createProjectFileEmbedding } from '../db/queries';
 import { Document } from 'langchain/document';
+import { head } from '@vercel/blob';
 
 const splitter = new RecursiveCharacterTextSplitter({
   chunkSize: 1000,
@@ -45,8 +46,11 @@ async function loadPDFContent(fileBuffer: ArrayBuffer, fileName: string) {
 
 export const createEmbeddings = task({
   id: 'create-embeddings',
+  queue: {
+    concurrencyLimit: 10,
+  },
   retry: {
-    maxAttempts: 1,
+    maxAttempts: 2,
     minTimeoutInMs: 1000,
     maxTimeoutInMs: 30000,
     factor: 2,
@@ -66,7 +70,12 @@ export const createEmbeddings = task({
     });
 
     try {
-      const response = await fetch(fileUrl);
+      const blobDetails = await head(fileUrl);
+
+      logger.info('Fetching file', {
+        fileUrl,
+      });
+      const response = await fetch(blobDetails.url);
       if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.statusText}`);
       }
@@ -93,19 +102,38 @@ export const createEmbeddings = task({
         throw new Error('No chunks created from PDF content');
       }
 
-      const { embeddings } = await embedMany({
-        model: embeddingModel,
-        values: chunks.map((chunk) => chunk.pageContent),
-      });
+      const allEmbeddings: number[][] = [];
+      const BATCH_SIZE = 90;
+
+      for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+        const batchChunks = chunks.slice(i, i + BATCH_SIZE);
+        const batchContent = batchChunks.map((chunk) => chunk.pageContent);
+
+        logger.info(
+          `Generating embeddings for batch ${Math.floor(i / BATCH_SIZE) + 1}`,
+          {
+            batchSize: batchContent.length,
+            startIndex: i,
+          },
+        );
+
+        const { embeddings: batchEmbeddings } = await embedMany({
+          model: embeddingModel,
+          values: batchContent,
+        });
+
+        allEmbeddings.push(...batchEmbeddings);
+        await wait.for({ seconds: 5 });
+      }
 
       logger.info('Embeddings generated', {
-        embeddingCount: embeddings.length,
+        embeddingCount: allEmbeddings.length,
       });
 
       const embeddingPromises = chunks.map(async (chunk, index) => {
         return await createProjectFileEmbedding({
           fileId,
-          embedding: embeddings[index],
+          embedding: allEmbeddings[index],
           chunkContent: chunk.pageContent,
           chunkIndex: index.toString(),
         });
@@ -122,7 +150,7 @@ export const createEmbeddings = task({
         success: true,
         fileId,
         chunkCount: chunks.length,
-        embeddingCount: embeddings.length,
+        embeddingCount: allEmbeddings.length,
       };
     } catch (error) {
       logger.error('Failed to create embeddings', {

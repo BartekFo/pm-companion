@@ -12,7 +12,6 @@ interface AbilityProviderProps {
 }
 
 export function AbilityProvider({ rules, children }: AbilityProviderProps) {
-  // Reconstruct the ability from rules on the client side
   const ability = useMemo(() => {
     return createMongoAbility<AppAbility>(rules);
   }, [rules]);

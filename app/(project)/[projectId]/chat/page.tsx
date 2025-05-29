@@ -6,6 +6,7 @@ import { DataStreamHandler } from '@/components/data-stream-handler';
 import { auth } from '@/app/(auth)/auth';
 import { redirect } from 'next/navigation';
 import { getProjectById } from '@/lib/db/queries';
+import { FileProcess } from './components/FileProcess';
 
 interface ProjectChatPageProps {
   params: Promise<{ projectId: string }>;
@@ -43,6 +44,7 @@ export default async function ProjectChatPage({
         projectId={projectId}
       />
       <DataStreamHandler id={id} />
+      <FileProcess />
     </>
   );
 }
