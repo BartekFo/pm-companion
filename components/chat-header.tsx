@@ -22,6 +22,7 @@ import { ROUTES } from '@/lib/constants/routes';
 import Link from 'next/link';
 import { Can } from './auth/can';
 import { memo } from 'react';
+import { ThemeSwitch } from './theme-switch';
 
 interface IChatHeaderProps {
   chatId: string;
@@ -108,6 +109,7 @@ function PureChatHeader({
           <TooltipContent>New Chat</TooltipContent>
         </Tooltip>
       )}
+      <ThemeSwitch />
     </header>
   );
 }

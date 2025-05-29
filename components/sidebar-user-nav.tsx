@@ -1,13 +1,11 @@
 'use client';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
-import { useTheme } from 'next-themes';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -22,7 +20,6 @@ import { Text } from './typography';
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { status } = useSession();
-  const { setTheme, theme } = useTheme();
 
   return (
     <SidebarMenu>
@@ -58,14 +55,6 @@ export function SidebarUserNav({ user }: { user: User }) {
             side="top"
             className="w-(--radix-popper-anchor-width)"
           >
-            <DropdownMenuItem
-              data-testid="user-nav-item-theme"
-              className="cursor-pointer"
-              onSelect={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            >
-              {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
               <button
                 type="button"
