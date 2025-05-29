@@ -1,6 +1,6 @@
 {
-  "name": "POCompanion",
-  "short_name": "POCompanion",
+  "name": "PMCompanion",
+  "short_name": "PMCompanion",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

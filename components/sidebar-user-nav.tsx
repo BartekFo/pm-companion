@@ -14,9 +14,9 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { toast } from './toast';
-import { LoaderIcon } from './icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Text } from './typography';
+import { Loader } from 'lucide-react';
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { status } = useSession();
@@ -29,7 +29,7 @@ export function SidebarUserNav({ user }: { user: User }) {
             <SidebarMenuButton className="h-auto p-0">
               {status === 'loading' ? (
                 <div className="size-4">
-                  <LoaderIcon />
+                  <Loader />
                 </div>
               ) : (
                 <div className="flex items-center gap-2">

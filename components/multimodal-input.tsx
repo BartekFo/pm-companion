@@ -5,12 +5,11 @@ import { useRef, useEffect, useCallback, memo } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 
-import { StopIcon } from './icons';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowDown, Send } from 'lucide-react';
+import { ArrowDown, Send, Square } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 
 function PureMultimodalInput({
@@ -232,7 +231,7 @@ function PureStopButton({
         setMessages((messages) => messages);
       }}
     >
-      <StopIcon size={14} />
+      <Square className="size-3.5" />
     </Button>
   );
 }

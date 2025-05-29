@@ -2,9 +2,8 @@
 
 import { useFormStatus } from 'react-dom';
 
-import { LoaderIcon } from '@/components/icons';
-
 import { Button } from './ui/button';
+import { Loader } from 'lucide-react';
 
 export function SubmitButton({
   children,
@@ -26,7 +25,7 @@ export function SubmitButton({
 
       {(pending || isSuccessful) && (
         <span className="animate-spin absolute right-4">
-          <LoaderIcon />
+          <Loader />
         </span>
       )}
 

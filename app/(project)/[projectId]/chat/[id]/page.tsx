@@ -7,7 +7,6 @@ import {
   getMessagesByChatId,
   getProjectById,
 } from '@/lib/db/queries';
-import { DataStreamHandler } from '@/components/data-stream-handler';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import type { DBMessage } from '@/lib/db/schema';
 import type { Attachment, UIMessage } from 'ai';
@@ -64,7 +63,6 @@ export default async function ProjectChatIdPage({
         autoResume={true}
         projectId={projectId}
       />
-      <DataStreamHandler id={id} />
     </>
   );
 }

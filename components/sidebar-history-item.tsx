@@ -11,9 +11,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { MoreHorizontalIcon, TrashIcon } from './icons';
 import { memo } from 'react';
 import { ROUTES } from '@/lib/constants/routes';
+import { Ellipsis, Trash } from 'lucide-react';
 
 interface IChatItemProps {
   chat: Chat;
@@ -48,7 +48,7 @@ const PureChatItem = ({
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground mr-0.5"
             showOnHover={!isActive}
           >
-            <MoreHorizontalIcon />
+            <Ellipsis />
             <span className="sr-only">More</span>
           </SidebarMenuAction>
         </DropdownMenuTrigger>
@@ -58,7 +58,7 @@ const PureChatItem = ({
             className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive dark:text-red-500"
             onSelect={() => onDelete(chat.id)}
           >
-            <TrashIcon />
+            <Trash />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

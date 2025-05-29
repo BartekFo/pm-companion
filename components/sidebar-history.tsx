@@ -26,9 +26,9 @@ import type { Chat } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
 import { ChatItem } from './sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
-import { LoaderIcon } from './icons';
 import { ROUTES } from '@/lib/constants/routes';
 import { OpenNewChatButton } from './open-new-chat-button';
+import { Loader } from 'lucide-react';
 
 type GroupedChats = {
   today: Chat[];
@@ -339,7 +339,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
           ) : (
             <div className="p-2 text-zinc-500 dark:text-zinc-400 flex flex-row gap-2 items-center mt-8">
               <div className="animate-spin">
-                <LoaderIcon />
+                <Loader />
               </div>
               <div>Loading Chats...</div>
             </div>

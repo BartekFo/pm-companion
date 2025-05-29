@@ -4,7 +4,7 @@ import { useCopyToClipboard } from 'usehooks-ts';
 
 import type { Vote } from '@/lib/db/schema';
 
-import { CopyIcon, ThumbDownIcon, ThumbUpIcon } from './icons';
+import { CopyIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   Tooltip,
@@ -113,7 +113,7 @@ export function PureMessageActions({
                 });
               }}
             >
-              <ThumbUpIcon />
+              <ThumbsUpIcon />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Upvote Response</TooltipContent>
@@ -166,7 +166,7 @@ export function PureMessageActions({
                 });
               }}
             >
-              <ThumbDownIcon />
+              <ThumbsDownIcon />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Downvote Response</TooltipContent>
