@@ -7,7 +7,7 @@ export const chatModel = new MockLanguageModelV1({
     rawCall: { rawPrompt: null, rawSettings: {} },
     finishReason: 'stop',
     usage: { promptTokens: 10, completionTokens: 20 },
-    text: `Hello, world!`,
+    text: 'Hello, world!',
   }),
   doStream: async ({ prompt }) => ({
     stream: simulateReadableStream({
@@ -24,7 +24,7 @@ export const reasoningModel = new MockLanguageModelV1({
     rawCall: { rawPrompt: null, rawSettings: {} },
     finishReason: 'stop',
     usage: { promptTokens: 10, completionTokens: 20 },
-    text: `Hello, world!`,
+    text: 'Hello, world!',
   }),
   doStream: async ({ prompt }) => ({
     stream: simulateReadableStream({
@@ -41,7 +41,7 @@ export const titleModel = new MockLanguageModelV1({
     rawCall: { rawPrompt: null, rawSettings: {} },
     finishReason: 'stop',
     usage: { promptTokens: 10, completionTokens: 20 },
-    text: `This is a test title`,
+    text: 'This is a test title',
   }),
   doStream: async () => ({
     stream: simulateReadableStream({
@@ -66,7 +66,7 @@ export const artifactModel = new MockLanguageModelV1({
     rawCall: { rawPrompt: null, rawSettings: {} },
     finishReason: 'stop',
     usage: { promptTokens: 10, completionTokens: 20 },
-    text: `Hello, world!`,
+    text: 'Hello, world!',
   }),
   doStream: async ({ prompt }) => ({
     stream: simulateReadableStream({

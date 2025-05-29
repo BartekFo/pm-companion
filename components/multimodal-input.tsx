@@ -67,6 +67,7 @@ function PureMultimodalInput({
     '',
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only run once after hydration
   useEffect(() => {
     if (textareaRef.current) {
       const domValue = textareaRef.current.value;
@@ -75,8 +76,6 @@ function PureMultimodalInput({
       setInput(finalValue);
       adjustHeight();
     }
-    // Only run once after hydration
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -88,6 +87,7 @@ function PureMultimodalInput({
     adjustHeight();
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: resetHeight is changing on every render
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `${chatUrlBase}/${chatId}`);
 

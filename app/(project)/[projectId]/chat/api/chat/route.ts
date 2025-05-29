@@ -246,9 +246,9 @@ export async function POST(
       return new Response(
         await streamContext.resumableStream(streamId, () => stream),
       );
-    } else {
-      return new Response(stream);
     }
+
+    return new Response(stream);
   } catch (error) {
     console.error(error);
     return new Response('An error occurred while processing your request!', {

@@ -9,7 +9,6 @@ import type { Vote } from '@/lib/db/schema';
 import { cn, fetcher, generateUUID } from '@/lib/utils';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages';
-import { useArtifactSelector } from '@/hooks/use-artifact';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
 import { toast } from './toast';
@@ -105,8 +104,6 @@ export function Chat({
     fetcher,
   );
 
-  const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
-
   useAutoResume({
     autoResume,
     initialMessages,
@@ -134,7 +131,6 @@ export function Chat({
           setMessages={setMessages}
           reload={reload}
           isReadonly={isReadonly}
-          isArtifactVisible={isArtifactVisible}
         />
 
         <form

@@ -42,7 +42,7 @@ export async function retrieveProjectContext(
     for (const file of projectFiles) {
       try {
         const fileEmbeddings = await getProjectFileEmbeddings(file.id);
-        fileEmbeddings.forEach((embedding) => {
+        for (const embedding of fileEmbeddings) {
           allEmbeddings.push({
             id: embedding.id,
             fileId: embedding.fileId,
@@ -51,7 +51,7 @@ export async function retrieveProjectContext(
             fileName: file.fileName,
             embedding: embedding.embedding,
           });
-        });
+        }
       } catch (error) {
         console.error(
           `Failed to get embeddings for file ${file.fileName}:`,
@@ -104,10 +104,10 @@ export function formatContextForPrompt(context: RetrievedContext): string {
     return 'No relevant project files found for this query.';
   }
 
-  let prompt = `## Project Context\n\n`;
+  let prompt = '## Project Context\n\n';
   prompt += `Project has ${context.projectSummary.totalFiles} files of types: ${context.projectSummary.fileTypes.join(', ')}\n\n`;
 
-  prompt += `### Relevant File Excerpts:\n\n`;
+  prompt += '### Relevant File Excerpts:\n\n';
 
   context.relevantChunks.forEach((chunk, index) => {
     prompt += `**${chunk.fileName}** (similarity: ${(chunk.similarity * 100).toFixed(1)}%)\n`;

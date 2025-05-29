@@ -8,6 +8,7 @@ interface Fixtures {
   curieContext: UserContext;
 }
 
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
 export const test = baseTest.extend<{}, Fixtures>({
   adaContext: [
     async ({ browser }, use, workerInfo) => {

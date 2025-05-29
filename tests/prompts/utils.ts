@@ -1,4 +1,4 @@
-import { CoreMessage, LanguageModelV1StreamPart } from 'ai';
+import type { CoreMessage, LanguageModelV1StreamPart } from 'ai';
 import { TEST_PROMPTS } from './basic';
 
 export function compareMessages(
@@ -57,7 +57,7 @@ const reasoningToDeltas = (text: string): LanguageModelV1StreamPart[] => {
 
 export const getResponseChunksByPrompt = (
   prompt: CoreMessage[],
-  isReasoningEnabled: boolean = false,
+  isReasoningEnabled = false,
 ): Array<LanguageModelV1StreamPart> => {
   const recentMessage = prompt.at(-1);
 
@@ -77,7 +77,7 @@ export const getResponseChunksByPrompt = (
           usage: { completionTokens: 10, promptTokens: 3 },
         },
       ];
-    } else if (compareMessages(recentMessage, TEST_PROMPTS.USER_GRASS)) {
+    }if (compareMessages(recentMessage, TEST_PROMPTS.USER_GRASS)) {
       return [
         ...reasoningToDeltas(
           'Grass is green because of chlorophyll absorption!',
@@ -103,7 +103,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.USER_GRASS)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.USER_GRASS)) {
     return [
       ...textToDeltas("It's just green duh!"),
       {
@@ -113,7 +113,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.USER_SKY)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.USER_SKY)) {
     return [
       ...textToDeltas("It's just blue duh!"),
       {
@@ -123,7 +123,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.USER_NEXTJS)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.USER_NEXTJS)) {
     return [
       ...textToDeltas('With Next.js, you can ship fast!'),
 
@@ -134,7 +134,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (
+  }if (
     compareMessages(recentMessage, TEST_PROMPTS.USER_IMAGE_ATTACHMENT)
   ) {
     return [
@@ -146,7 +146,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.USER_TEXT_ARTIFACT)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.USER_TEXT_ARTIFACT)) {
     return [
       {
         type: 'tool-call',
@@ -165,7 +165,7 @@ export const getResponseChunksByPrompt = (
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (
+  }if (
     compareMessages(recentMessage, TEST_PROMPTS.CREATE_DOCUMENT_TEXT_CALL)
   ) {
     return [
@@ -195,7 +195,7 @@ As we move forward, Silicon Valley continues to reinvent itself. While some pred
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (
+  }if (
     compareMessages(recentMessage, TEST_PROMPTS.CREATE_DOCUMENT_TEXT_RESULT)
   ) {
     return [
@@ -210,7 +210,7 @@ As we move forward, Silicon Valley continues to reinvent itself. While some pred
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.GET_WEATHER_CALL)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.GET_WEATHER_CALL)) {
     return [
       {
         type: 'tool-call',
@@ -226,7 +226,7 @@ As we move forward, Silicon Valley continues to reinvent itself. While some pred
         usage: { completionTokens: 10, promptTokens: 3 },
       },
     ];
-  } else if (compareMessages(recentMessage, TEST_PROMPTS.GET_WEATHER_RESULT)) {
+  }if (compareMessages(recentMessage, TEST_PROMPTS.GET_WEATHER_RESULT)) {
     return [
       ...textToDeltas('The current temperature in San Francisco is 17°C.'),
       {
