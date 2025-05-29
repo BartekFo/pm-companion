@@ -29,7 +29,7 @@ export function SidebarUserNav({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="h-auto">
+            <SidebarMenuButton className="h-auto p-0">
               {status === 'loading' ? (
                 <div className="size-4">
                   <LoaderIcon />
