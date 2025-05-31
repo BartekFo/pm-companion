@@ -9,6 +9,7 @@ import { Suspense } from 'react';
 import { checkProjectManagement } from '@/lib/auth/permission-checks';
 import { ForbiddenError } from '@casl/ability';
 import { ROUTES } from '@/lib/constants/routes';
+import { UserAvatar } from '../../components/user-avatar';
 
 interface EditProjectPageProps {
   params: Promise<{ projectId: string }>;
@@ -36,6 +37,7 @@ export default async function EditProjectPage({
 
   return (
     <>
+      <UserAvatar user={session.user} />
       <ProjectHeading
         title="Edit project"
         description="Update your project details, manage team members and add or remove files"

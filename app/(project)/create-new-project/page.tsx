@@ -4,6 +4,7 @@ import { auth } from '@/app/(auth)/auth';
 import { CreateNewProjectForm } from './components/form';
 import { ForbiddenError } from '@casl/ability';
 import { getCurrentUserAbility } from '@/lib/auth/get-ability';
+import { UserAvatar } from '../components/user-avatar';
 
 export default async function CreateNewProjectPage() {
   const session = await auth();
@@ -21,6 +22,7 @@ export default async function CreateNewProjectPage() {
 
   return (
     <>
+      <UserAvatar user={session.user} />
       <ProjectHeading
         title="Create project"
         description="Enter your project details, assign team members to begin collaboration and upload relevant files to share with your Team"
