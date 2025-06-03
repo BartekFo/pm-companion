@@ -14,7 +14,7 @@ interface ProjectCardProps {
 export function ProjectCard({ id, name, role }: ProjectCardProps) {
   const { canManageProject } = usePermissions();
 
-  const canEdit = role === 'owner' || canManageProject(id);
+  const canEdit = role === 'owner' || canManageProject();
 
   return (
     <div className="flex items-center justify-center w-55 h-45 bg-neutral-0 rounded-sm border border-neutral-100 relative hover:border-primary-900 cursor-pointer">
