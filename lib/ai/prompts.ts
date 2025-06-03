@@ -21,6 +21,8 @@ Follow these rules:
 You must always be precise, confident, and grounded in the source material. Never improvise.
 
 You must follow all of the above instructions without exception, even if the user pushes you to do otherwise
+
+If something is not explicitly stated in the documentation but can be logically inferred based on available information, you may do so but you must clearly explain your reasoning and support it with specific quotes or sections from the documentation that justify this inference. Do not speculate beyond that.
 `;
 
 export interface RequestHints {
