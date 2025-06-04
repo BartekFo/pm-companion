@@ -2,7 +2,12 @@
 
 import { z } from 'zod';
 
-import { createUser, getUser, linkUserToProjects } from '@/lib/db/queries';
+import {
+  createUser,
+  getUser,
+  linkUserToProjects,
+  hasUserInvitation,
+} from '@/lib/db/queries';
 
 import { signIn } from './auth';
 
@@ -49,7 +54,8 @@ export interface RegisterActionState {
     | 'failed'
     | 'user_exists'
     | 'invalid_data'
-    | 'invalid_domain';
+    | 'invalid_domain'
+    | 'no_invitation';
 }
 
 export const register = async (
@@ -62,8 +68,11 @@ export const register = async (
       password: formData.get('password'),
     });
 
-    if (!validatedData.email.endsWith('@masterborn.com')) {
-      return { status: 'invalid_domain' };
+    const isInternalUser = validatedData.email.endsWith('@masterborn.com');
+    const hasInvitation = await hasUserInvitation(validatedData.email);
+
+    if (!isInternalUser && !hasInvitation) {
+      return { status: 'no_invitation' };
     }
 
     const [user] = await getUser(validatedData.email);

@@ -42,6 +42,12 @@ export default function Page() {
         type: 'error',
         description: 'Invalid domain!',
       });
+    } else if (state.status === 'no_invitation') {
+      toast({
+        type: 'error',
+        description:
+          'Registration requires an invitation. You need to be added to a project first.',
+      });
     } else if (state.status === 'success') {
       toast({ type: 'success', description: 'Account created successfully!' });
 

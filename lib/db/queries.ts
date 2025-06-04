@@ -864,3 +864,23 @@ export async function isUserProjectPM(
     throw error;
   }
 }
+
+export async function hasUserInvitation(email: string): Promise<boolean> {
+  try {
+    const [invitation] = await db
+      .select()
+      .from(projectMember)
+      .where(
+        and(
+          eq(projectMember.email, email),
+          eq(projectMember.status, 'pending'),
+        ),
+      )
+      .limit(1);
+
+    return !!invitation;
+  } catch (error) {
+    console.error('Failed to check user invitation');
+    throw error;
+  }
+}
