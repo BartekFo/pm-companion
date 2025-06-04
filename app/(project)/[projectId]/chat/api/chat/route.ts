@@ -33,8 +33,15 @@ import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 import { retrieveProjectContext, formatContextForPrompt } from '@/lib/ai/rag';
+import { redis } from '@/lib/redis';
+import { Ratelimit } from '@upstash/ratelimit';
 
 export const maxDuration = 60;
+
+const rateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.tokenBucket(1, '5s', 30),
+});
 
 let globalStreamContext: ResumableStreamContext | null = null;
 
@@ -79,6 +86,15 @@ export async function POST(
 
     if (!session?.user) {
       return new Response('Unauthorized', { status: 401 });
+    }
+
+    try {
+      const { success } = await rateLimit.limit(session.user.id);
+      if (!success) {
+        return new Response('Rate limit exceeded', { status: 429 });
+      }
+    } catch (error) {
+      console.error('Rate limit error:', error);
     }
 
     const project = await getProjectById(projectId);
