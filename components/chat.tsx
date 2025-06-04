@@ -75,7 +75,6 @@ export function Chat({
       );
     },
     onError: (error) => {
-      console.log(error);
       toast({
         type: 'error',
         description: error.message,
