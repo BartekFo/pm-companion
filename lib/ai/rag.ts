@@ -23,7 +23,7 @@ export async function retrieveProjectContext(
     similarityThreshold?: number;
   } = {},
 ): Promise<RetrievedContext> {
-  const { maxChunks = 5, similarityThreshold = 0.35 } = options;
+  const { similarityThreshold = 0.5 } = options;
 
   try {
     const queryEmbedding = await generateEmbedding(userQuery);
@@ -68,7 +68,6 @@ export async function retrieveProjectContext(
     const relevantChunks = similarities
       .filter((item) => item.similarity >= similarityThreshold)
       .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, maxChunks)
       .map((chunk) => ({
         content: chunk.chunkContent,
         fileName: chunk.fileName,
