@@ -7,6 +7,7 @@ import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { motion } from 'motion/react';
 import { useMessages } from '@/hooks/use-messages';
+import { cn } from '@/lib/utils';
 
 interface MessagesProps {
   chatId: string;
@@ -41,7 +42,11 @@ function PureMessages({
   return (
     <div
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4 relative"
+      data-testid="messages-container"
+      className={cn(
+        'flex flex-col min-w-0 gap-6 overflow-y-auto pt-4 relative',
+        messages.length > 0 && 'flex-1',
+      )}
     >
       {messages.length === 0 && <Greeting />}
 

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
-import { cn, fetcher, generateUUID } from '@/lib/utils';
+import { fetcher, generateUUID } from '@/lib/utils';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages';
 import { unstable_serialize } from 'swr/infinite';
@@ -133,14 +133,7 @@ export function Chat({
           isReadonly={isReadonly}
         />
 
-        <form
-          className={cn(
-            'flex mx-auto px-4 pb-4 md:pb-6 gap-2 w-full md:max-w-3xl',
-            messages.length === 0 &&
-              'absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2',
-            messages.length === 1 && 'animate-slide-to-bottom',
-          )}
-        >
+        <form className="flex mx-auto px-4 pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
           {!isReadonly && (
             <MultimodalInput
               chatId={id}
